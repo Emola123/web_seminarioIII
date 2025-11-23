@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Clock, Store, MapPin, Phone, Mail, Lock, CreditCard } from 'lucide-react';
 import { Input } from '../common/Input';
 import { StoreFormData } from '../../types/auth.types';
+import { View } from '../../types/navigation.types';
 
 interface StoreRegistrationProps {
-  onNavigate: (view: string) => void;
+  onNavigate: (view: View) => void;
 }
 
 export const StoreRegistration: React.FC<StoreRegistrationProps> = ({ onNavigate }) => {
