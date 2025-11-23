@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { Login } from './components/auth/Login';
+import { Register } from './components/auth/Register';
+import { ForgotPassword } from './components/auth/ForgotPassword';
+import { ResetPassword } from './components/auth/ResetPassword';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+  const [currentView, setCurrentView] = useState('login');
+
+  const renderView = () => {
+    switch (currentView) {
+      case 'login':
+        return <Login onNavigate={setCurrentView} />;
+      case 'register':
+        return <Register onNavigate={setCurrentView} />;
+      case 'forgot-password':
+        return <ForgotPassword onNavigate={setCurrentView} />;
+      case 'reset-password':
+        return <ResetPassword onNavigate={setCurrentView} />;
+      default:
+        return <Login onNavigate={setCurrentView} />;
+    }
+  };
+
+  return <div>{renderView()}</div>;
 }
-
-export default App;
