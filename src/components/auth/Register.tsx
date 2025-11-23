@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { CheckCircle, MapPin, Store, Phone, Mail, Lock, CreditCard } from 'lucide-react';
 import { Input } from '../common/Input';
+import { NavigateHandler } from '../../types/navigation.types';
 
 interface RegisterProps {
-  onNavigate: (view: string) => void;
+  onNavigate: NavigateHandler;
 }
 
 export const Register: React.FC<RegisterProps> = ({ onNavigate }) => {

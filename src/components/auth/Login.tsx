@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Clock } from 'lucide-react';
 import { Input } from '../common/Input';
 import { LoginFormData } from '../../types/auth.types';
+import { NavigateHandler } from '../../types/navigation.types';
 
 interface LoginProps {
-  onNavigate: (view: string) => void;
+  onNavigate: NavigateHandler;
 }
 
 export const Login: React.FC<LoginProps> = ({ onNavigate }) => {
