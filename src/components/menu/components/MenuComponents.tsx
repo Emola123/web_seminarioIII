@@ -34,20 +34,22 @@ export const Header: React.FC = () => (
 
 interface FilterItemProps {
   title: string;
-  icon: ReactElement<any, any>; 
+  icon: ReactElement<any, any>;
   selected?: boolean;
   dropdown?: boolean;
   children?: React.ReactNode;
 }
 
 export const FilterItem: React.FC<FilterItemProps> = ({ title, icon, selected = false, dropdown = false, children }) => (
-  <div className="bg-white rounded-lg shadow-sm">
-    <button className={`w-full flex justify-between items-center text-left ${selected ? 'text-green-700 bg-green-50 rounded-lg p-3' : 'text-gray-600 p-3 hover:bg-gray-50 rounded-lg'}`}>
-      <div className="flex items-center space-x-3">
-        {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any, any>, { size: 20 }) : icon}
-        <span className="text-sm font-medium">{title}</span>
+  <div className="filter-item">
+    <button className={`filter-button ${selected ? 'selected' : ''}`}>
+      <div className="filter-content">
+        <div className="filter-icon-wrapper">
+          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any, any>, { size: 20 }) : icon}
+        </div>
+        <span className="filter-label">{title}</span>
       </div>
-      {dropdown && <span className={`transform transition-transform ${selected ? 'rotate-180' : ''}`}>▼</span>}
+      {dropdown && <span className={`filter-chevron ${selected ? 'rotated' : ''}`}>▼</span>}
       {children}
     </button>
   </div>

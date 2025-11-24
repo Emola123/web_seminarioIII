@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Heart, ShoppingCart, User, Store } from 'lucide-react';
 import './Header.css';
 
@@ -13,6 +13,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLogout, onProfileClick, onNavigate }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [localUser, setLocalUser] = useState<{ name: string; photo?: string } | null>(null);
 
   useEffect(() => {
@@ -54,6 +55,8 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
     }
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <header className="header-container">
       {/* Logo Section */}
@@ -63,20 +66,35 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
           Expirapp
         </Link>
       </div>
-      
+
       {/* Navigation Section */}
       {variant !== 'simple' && (
         <nav className="header-nav lg:flex hidden">
           {activeUser && (
             <>
-              <button onClick={() => handleNavigation('home')} className="header-nav-link">
-                Home
+              <button
+                onClick={() => navigate('/')}
+                className={`header-nav-link ${isActive('/') ? 'active' : ''}`}
+              >
+                Inicio
               </button>
-              <button onClick={() => handleNavigation('products')} className="header-nav-link">
-                Products
+              <button
+                onClick={() => navigate('/orders')}
+                className={`header-nav-link ${isActive('/orders') ? 'active' : ''}`}
+              >
+                Pedidos
               </button>
-              <button onClick={() => handleNavigation('profile')} className="header-nav-link active">
-                My Profile
+              <button
+                onClick={() => navigate('/cart')}
+                className={`header-nav-link ${isActive('/cart') ? 'active' : ''}`}
+              >
+                Carrito
+              </button>
+              <button
+                onClick={() => navigate('/profile')}
+                className={`header-nav-link ${isActive('/profile') ? 'active' : ''}`}
+              >
+                Perfil
               </button>
             </>
           )}
@@ -100,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
           </>
         ) : (
           <>
-            <button 
+            <button
               className="btn-login sm:inline-flex hidden"
               onClick={() => navigate('/login')}
             >

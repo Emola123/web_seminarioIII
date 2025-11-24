@@ -18,45 +18,41 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpen }) => 
   };
 
   return (
-    <div onClick={onOpen} className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl group cursor-pointer h-full flex flex-col">
-      <div className="relative h-48 sm:h-48 overflow-hidden">
+    <div onClick={onOpen} className="product-card">
+      <div className="product-image-wrapper">
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+          className="product-image"
           onError={handleImageError}
         />
         {product.badge && (
-          <span
-            className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold rounded-full shadow-md
-              ${isDonation ? 'bg-green-500 text-white' : 'bg-yellow-500 text-gray-900'}
-            `}
-          >
+          <span className={`product-badge ${isDonation ? 'badge-donation' : 'badge-offer'}`}>
             {product.badge}
           </span>
         )}
       </div>
 
-      <div className="p-4 flex flex-col space-y-1 flex-grow">
-        <h3 className="text-base font-semibold text-gray-800 truncate">{product.name}</h3>
-        <div className="flex items-end space-x-2">
+      <div className="product-content">
+        <h3 className="product-title">{product.name}</h3>
+        <div className="product-price-row">
           {isDonation ? (
-            <span className="text-lg font-bold text-green-600">Gratis</span>
+            <span className="price-free">Gratis</span>
           ) : (
             <>
-              <span className="text-lg font-bold text-gray-800">${product.price}</span>
+              <span className="price-current">${product.price}</span>
               {hasOffer && product.originalPrice && (
-                <span className="text-sm line-through text-gray-400">${product.originalPrice}</span>
+                <span className="price-original">${product.originalPrice}</span>
               )}
             </>
           )}
         </div>
-        <div className="flex items-center space-x-1 text-sm text-gray-500 mt-1">
+        <div className="product-meta">
           {product.icon}
-          <span className="truncate">{product.location}</span>
+          <span className="product-location">{product.location}</span>
         </div>
-        <div className="flex items-center space-x-1 text-xs text-gray-400 mt-auto pt-2">
-          <MapPin size={12} className="text-gray-400" />
+        <div className="product-footer">
+          <MapPin size={12} className="icon-pin" />
           <span>{product.distance || 'Cerca de ti'}</span>
         </div>
       </div>

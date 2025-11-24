@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { CartItem as CartItemType, CartStore } from '../../../types/menu.types';
 import { Header } from '../../common/Header';
+import './menu.css';
 
 // --- Interfaces de Tipado ---
 
@@ -63,13 +64,13 @@ const initialCartData: CartData = [
 // --- Subcomponentes ---
 
 const Footer: React.FC = () => (
-    <footer className="w-full bg-gray-100 mt-12 py-6 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+    <footer className="cart-footer">
+        <div className="footer-content">
             <p>© 2025 Expirapp. Todos los derechos reservados.</p>
-            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 md:mt-0">
-                <button className="hover:text-green-600 px-2">Ayuda</button>
-                <button className="hover:text-green-600 px-2">Términos</button>
-                <button className="hover:text-green-600 px-2">Privacidad</button>
+            <div className="footer-links">
+                <button className="footer-link">Ayuda</button>
+                <button className="footer-link">Términos</button>
+                <button className="footer-link">Privacidad</button>
             </div>
         </div>
     </footer>
@@ -83,20 +84,20 @@ interface QuantityControlProps {
 }
 
 const QuantityControl: React.FC<QuantityControlProps> = ({ quantity, onIncrease, onDecrease, itemId }) => (
-    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden h-9">
+    <div className="quantity-control">
         <button
             onClick={() => onDecrease(itemId, 'decrease')}
-            className="p-2 w-8 h-full text-gray-600 hover:bg-gray-100 transition disabled:opacity-50"
+            className="quantity-btn"
             disabled={quantity <= 1}
         >
             <Minus size={16} />
         </button>
-        <span className="w-8 text-center text-sm font-medium text-gray-800 border-x border-gray-300 flex items-center justify-center h-full select-none">
+        <span className="quantity-display">
             {quantity}
         </span>
         <button
             onClick={() => onIncrease(itemId, 'increase')}
-            className="p-2 w-8 h-full text-gray-600 hover:bg-gray-100 transition"
+            className="quantity-btn"
         >
             <Plus size={16} />
         </button>
@@ -110,46 +111,46 @@ interface CartItemProps {
 }
 
 const CartItem: React.FC<CartItemProps> = ({ item, updateQuantity, removeItem }) => (
-    <div className="flex items-center py-4 border-b border-gray-100 last:border-b-0">
+    <div className="cart-item">
         {/* Imagen del Producto */}
-        <div className="w-20 h-20 flex-shrink-0 mr-4 rounded-lg overflow-hidden bg-gray-100">
-            <img 
-                src={item.imageUrl} 
-                alt={item.name} 
-                className="w-full h-full object-cover" 
-                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { 
-                    (e.target as HTMLImageElement).onerror = null; 
-                    (e.target as HTMLImageElement).src = 'https://placehold.co/100x100/cccccc/333333?text=Prod'; 
+        <div className="cart-item-image-wrapper">
+            <img
+                src={item.imageUrl}
+                alt={item.name}
+                className="cart-item-image"
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                    (e.target as HTMLImageElement).onerror = null;
+                    (e.target as HTMLImageElement).src = 'https://placehold.co/100x100/cccccc/333333?text=Prod';
                 }}
             />
         </div>
 
         {/* Detalles del Producto */}
-        <div className="flex-grow min-w-0 pr-4">
-            <h4 className="font-semibold text-gray-800 text-base leading-snug">{item.name}</h4>
-            <p className="text-xs text-gray-500 mt-0.5">
+        <div className="cart-item-details">
+            <h4 className="cart-item-title">{item.name}</h4>
+            <p className="cart-item-subtitle">
                 Marca: {item.brand}, Tamaño: {item.size}
             </p>
-            <p className="text-xs text-red-500 font-medium mt-0.5">
+            <p className="cart-item-expiry">
                 Vence el {item.expiryDate}
             </p>
-            <p className="mt-1 text-sm">
-                <span className="line-through text-gray-400 mr-2">Antes: ${item.originalPrice.toFixed(2)}</span>
-                <span className="font-bold text-green-600">Ahora: ${item.salePrice.toFixed(2)}</span>
+            <p className="cart-item-price">
+                <span className="price-old">Antes: ${item.originalPrice.toFixed(2)}</span>
+                <span className="price-new">Ahora: ${item.salePrice.toFixed(2)}</span>
             </p>
         </div>
 
         {/* Controles de Cantidad y Eliminar */}
-        <div className="flex flex-col items-end space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+        <div className="cart-item-actions">
             <QuantityControl
                 quantity={item.quantity}
                 itemId={item.itemId}
                 onIncrease={(id, type) => updateQuantity(id, type)}
                 onDecrease={(id, type) => updateQuantity(id, type)}
             />
-            <button 
+            <button
                 onClick={() => removeItem(item.itemId)}
-                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                className="btn-remove"
             >
                 <Trash2 size={20} />
             </button>
@@ -164,16 +165,16 @@ interface StoreSectionProps {
 }
 
 const StoreSection: React.FC<StoreSectionProps> = ({ section, updateQuantity, removeItem }) => (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <h3 className="text-lg font-semibold text-gray-700 border-b pb-3 mb-4">
+    <div className="store-section">
+        <h3 className="store-title">
             Productos de {section.store}
         </h3>
-        <div className="divide-y divide-gray-100">
+        <div className="store-items">
             {section.items.map((item: CartItemType) => (
-                <CartItem 
-                    key={item.itemId} 
-                    item={item} 
-                    updateQuantity={updateQuantity} 
+                <CartItem
+                    key={item.itemId}
+                    item={item}
+                    updateQuantity={updateQuantity}
                     removeItem={removeItem}
                 />
             ))}
@@ -189,30 +190,30 @@ interface OrderSummaryProps {
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({ subtotal, totalDiscount, totalToPay, onProceed }) => (
-    <div className="bg-white rounded-xl shadow-lg p-6 sticky top-8">
-        <h3 className="text-lg font-semibold text-gray-700 pb-3 border-b border-gray-100 mb-4">
+    <div className="order-summary">
+        <h3 className="summary-title">
             Resumen del Pedido
         </h3>
-        
-        <div className="space-y-2 text-gray-600">
-            <div className="flex justify-between">
+
+        <div className="summary-details">
+            <div className="summary-row">
                 <span>Subtotal (Precio Original)</span>
                 <span>${subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between font-bold text-green-600">
+            <div className="summary-row discount">
                 <span>Ahorro Total</span>
                 <span>-${totalDiscount.toFixed(2)}</span>
             </div>
         </div>
 
-        <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center text-xl font-bold text-gray-800">
+        <div className="summary-total">
             <span>Total a Pagar</span>
             <span>${totalToPay.toFixed(2)}</span>
         </div>
 
-        <button 
-            onClick={onProceed} 
-            className="w-full mt-6 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-md hover:bg-green-700 transition duration-150"
+        <button
+            onClick={onProceed}
+            className="btn-proceed"
         >
             Proceder al Pago
         </button>
@@ -233,7 +234,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
     const [localCartData, setLocalCartData] = useState<CartData>(initialCartData);
     const cartData = externalCartData ?? localCartData;
     const setCartData = externalSetCartData ?? setLocalCartData;
-    
+
     const navigate = useNavigate();
 
     // Lógica de cálculo del carrito tipada
@@ -246,7 +247,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
             store.items.forEach((item: CartItemType) => {
                 const itemSubtotal = item.originalPrice * item.quantity;
                 const itemSaleTotal = item.salePrice * item.quantity;
-                
+
                 subtotal += itemSubtotal;
                 totalToPay += itemSaleTotal;
                 totalDiscount += itemSubtotal - itemSaleTotal;
@@ -265,7 +266,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
                 if (item.itemId === itemId) {
                     const newQuantity = type === 'increase' ? item.quantity + 1 : item.quantity - 1;
                     // La cantidad mínima es 1
-                    return { ...item, quantity: Math.max(1, newQuantity) }; 
+                    return { ...item, quantity: Math.max(1, newQuantity) };
                 }
                 return item;
             })
@@ -283,20 +284,20 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
             return newData.filter(store => store.items.length > 0);
         });
     };
-    
+
     // Si el carrito está vacío
     if (cartData.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-50 font-sans w-full flex flex-col">
-                <Header variant="simple"/>
-                <main className="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 flex items-center justify-center">
-                    <div className="text-center p-12 bg-white rounded-xl shadow-xl">
-                        <Trash2 size={48} className="mx-auto text-gray-400 mb-4" />
-                        <h2 className="text-2xl font-bold text-gray-700 mb-2">Tu Carrito Está Vacío</h2>
-                        <p className="text-gray-500 mb-6">Parece que aún no has agregado productos con ofertas cerca de su fecha de caducidad.</p>
-                        <button 
-                            onClick={() => navigate('/')} 
-                            className="py-2 px-6 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition duration-150"
+            <div className="cart-page">
+                <Header variant="simple" />
+                <main className="cart-main empty">
+                    <div className="empty-cart-card">
+                        <Trash2 size={48} className="empty-cart-icon" />
+                        <h2 className="empty-cart-title">Tu Carrito Está Vacío</h2>
+                        <p className="empty-cart-text">Parece que aún no has agregado productos con ofertas cerca de su fecha de caducidad.</p>
+                        <button
+                            onClick={() => navigate('/')}
+                            className="btn-explore"
                         >
                             Explorar Ofertas
                         </button>
@@ -308,20 +309,20 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans w-full flex flex-col">
-            <Header variant="simple"/>
-            <main className="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+        <div className="cart-page">
+            <Header variant="simple" />
+            <main className="cart-main">
                 {/* Título y CTA */}
-                <div className="flex justify-between items-baseline mb-8">
-                    <h2 className="text-3xl font-bold text-gray-800">Tu Carrito de Compras</h2>
+                <div className="cart-header">
+                    <h2 className="cart-page-title">Tu Carrito de Compras</h2>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="cart-layout">
                     {/* Columna de Productos */}
-                    <div className="lg:col-span-2">
+                    <div className="cart-products-column">
                         {cartData.map((section: CartStore) => (
-                            <StoreSection 
-                                key={section.id} 
+                            <StoreSection
+                                key={section.id}
                                 section={section}
                                 updateQuantity={updateQuantity}
                                 removeItem={removeItem}
@@ -330,7 +331,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
                     </div>
 
                     {/* Columna de Resumen del Pedido */}
-                    <div className="lg:col-span-1">
+                    <div className="cart-summary-column">
                         <OrderSummary
                             subtotal={subtotal}
                             totalDiscount={totalDiscount}
