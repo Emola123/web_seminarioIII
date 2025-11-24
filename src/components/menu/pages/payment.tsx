@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Truck, Store, LucideIcon } from 'lucide-react';
 
 // --- Interfaces de Tipado ---
@@ -30,7 +30,7 @@ const Header: React.FC = () => (
     <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm">
         <div className="flex items-center justify-center w-full max-w-7xl mx-auto"> 
             {/* Usamos un enlace simple para simular la navegación, ajustado con clases de Tailwind */}
-            <a href="/" className="nav-logo-link font-bold text-xl text-green-600">Expirapp</a>
+            <Link to="/" className="nav-logo-link font-bold text-xl text-green-600">Expirapp</Link>
         </div>
     </header>
 );

@@ -1,37 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Trash2, Minus, Plus } from 'lucide-react';
+import { Trash2, Minus, Plus } from 'lucide-react';
+import { CartItem as CartItemType, CartStore } from '../../../types/menu.types';
+import { Header } from '../../common/Header';
 
 // --- Interfaces de Tipado ---
 
 /**
- * Define la estructura de un artículo individual en el carrito.
- */
-interface CartItem {
-    itemId: string;
-    name: string;
-    brand: string;
-    size: string;
-    expiryDate: string;
-    originalPrice: number;
-    salePrice: number;
-    quantity: number;
-    imageUrl: string;
-}
-
-/**
- * Define una sección del carrito agrupada por tienda.
- */
-interface StoreSectionData {
-    id: number;
-    store: string;
-    items: CartItem[];
-}
-
-/**
  * El tipo principal para los datos del carrito (un array de secciones de tienda).
  */
-type CartData = StoreSectionData[];
+type CartData = CartStore[];
 
 // --- Mock Data Tipado ---
 const initialCartData: CartData = [
@@ -69,7 +47,7 @@ const initialCartData: CartData = [
         items: [
             {
                 itemId: 'b1',
-                name: "Leche Fresca Entera",
+                name: "Leche Entera",
                 brand: "Lala",
                 size: "1L",
                 expiryDate: "22/10/2024",
@@ -82,51 +60,7 @@ const initialCartData: CartData = [
     }
 ];
 
-// --- Subcomponentes Props ---
-
-interface QuantityControlProps {
-    quantity: number;
-    onIncrease: (itemId: string, type: 'increase') => void;
-    onDecrease: (itemId: string, type: 'decrease') => void;
-    itemId: string;
-}
-
-interface CartItemProps {
-    item: CartItem;
-    updateQuantity: (itemId: string, type: 'increase' | 'decrease') => void;
-    removeItem: (itemId: string) => void;
-}
-
-interface StoreSectionProps {
-    section: StoreSectionData;
-    updateQuantity: (itemId: string, type: 'increase' | 'decrease') => void;
-    removeItem: (itemId: string) => void;
-}
-
-interface OrderSummaryProps {
-    subtotal: number;
-    totalDiscount: number;
-    totalToPay: number;
-    onProceed: () => void;
-}
-
 // --- Subcomponentes ---
-
-const Header: React.FC = () => (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between w-full max-w-7xl mx-auto"> 
-            <div className="flex items-center space-x-2">
-                <a href="/" className="nav-logo-link font-bold text-xl text-green-600">Expirapp</a>
-            </div>
-            <div className="flex items-center space-x-4">
-                {/* Ícono de Usuario */}
-                <button className="p-2 rounded-full hover:bg-gray-100 text-gray-500">
-                    <User size={20} />
-                </button>
-            </div>
-        </div>
-    </header>
-);
 
 const Footer: React.FC = () => (
     <footer className="w-full bg-gray-100 mt-12 py-6 border-t border-gray-200">
@@ -140,6 +74,13 @@ const Footer: React.FC = () => (
         </div>
     </footer>
 );
+
+interface QuantityControlProps {
+    quantity: number;
+    onIncrease: (itemId: string, type: 'increase') => void;
+    onDecrease: (itemId: string, type: 'decrease') => void;
+    itemId: string;
+}
 
 const QuantityControl: React.FC<QuantityControlProps> = ({ quantity, onIncrease, onDecrease, itemId }) => (
     <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden h-9">
@@ -161,6 +102,12 @@ const QuantityControl: React.FC<QuantityControlProps> = ({ quantity, onIncrease,
         </button>
     </div>
 );
+
+interface CartItemProps {
+    item: CartItemType;
+    updateQuantity: (itemId: string, type: 'increase' | 'decrease') => void;
+    removeItem: (itemId: string) => void;
+}
 
 const CartItem: React.FC<CartItemProps> = ({ item, updateQuantity, removeItem }) => (
     <div className="flex items-center py-4 border-b border-gray-100 last:border-b-0">
@@ -210,13 +157,19 @@ const CartItem: React.FC<CartItemProps> = ({ item, updateQuantity, removeItem })
     </div>
 );
 
+interface StoreSectionProps {
+    section: CartStore;
+    updateQuantity: (itemId: string, type: 'increase' | 'decrease') => void;
+    removeItem: (itemId: string) => void;
+}
+
 const StoreSection: React.FC<StoreSectionProps> = ({ section, updateQuantity, removeItem }) => (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
         <h3 className="text-lg font-semibold text-gray-700 border-b pb-3 mb-4">
             Productos de {section.store}
         </h3>
         <div className="divide-y divide-gray-100">
-            {section.items.map((item: CartItem) => (
+            {section.items.map((item: CartItemType) => (
                 <CartItem 
                     key={item.itemId} 
                     item={item} 
@@ -227,6 +180,13 @@ const StoreSection: React.FC<StoreSectionProps> = ({ section, updateQuantity, re
         </div>
     </div>
 );
+
+interface OrderSummaryProps {
+    subtotal: number;
+    totalDiscount: number;
+    totalToPay: number;
+    onProceed: () => void;
+}
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({ subtotal, totalDiscount, totalToPay, onProceed }) => (
     <div className="bg-white rounded-xl shadow-lg p-6 sticky top-8">
@@ -282,8 +242,8 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
         let totalDiscount = 0;
         let totalToPay = 0;
 
-        cartData.forEach((store: StoreSectionData) => {
-            store.items.forEach((item: CartItem) => {
+        cartData.forEach((store: CartStore) => {
+            store.items.forEach((item: CartItemType) => {
                 const itemSubtotal = item.originalPrice * item.quantity;
                 const itemSaleTotal = item.salePrice * item.quantity;
                 
@@ -328,7 +288,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
     if (cartData.length === 0) {
         return (
             <div className="min-h-screen bg-gray-50 font-sans w-full flex flex-col">
-                <Header/>
+                <Header variant="simple"/>
                 <main className="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 flex items-center justify-center">
                     <div className="text-center p-12 bg-white rounded-xl shadow-xl">
                         <Trash2 size={48} className="mx-auto text-gray-400 mb-4" />
@@ -349,7 +309,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans w-full flex flex-col">
-            <Header/>
+            <Header variant="simple"/>
             <main className="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
                 {/* Título y CTA */}
                 <div className="flex justify-between items-baseline mb-8">
@@ -359,7 +319,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Columna de Productos */}
                     <div className="lg:col-span-2">
-                        {cartData.map((section: StoreSectionData) => (
+                        {cartData.map((section: CartStore) => (
                             <StoreSection 
                                 key={section.id} 
                                 section={section}

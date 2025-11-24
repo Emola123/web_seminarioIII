@@ -4,22 +4,35 @@ export interface LoginFormData {
   rememberMe: boolean;
 }
 
-export interface RegisterFormData {
+export interface BuyerRegisterData {
   fullName: string;
   email: string;
   password: string;
   address: string;
-  role: 'comprador' | 'vendedor'; 
 }
 
 export interface StoreFormData {
-  businessName: string;
-  taxId: string;
-  physicalAddress: string;
-  phone: string;
-  email: string;
-  password: string;
-  role: 'vendedor'; 
+  nombreUsuario: string;
+  areaResponsable: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  contrasena: string;
+}
+
+export interface StoreRegisterData {
+  nombreUsuario: string;
+  areaResponsable: string;
+  direccion: string;
+  telefono: string;
+  correo: string;
+  contrasena: string;
+}
+
+export interface RegisterFormData {
+  role: 'comprador' | 'vendedor';
+  buyer?: BuyerRegisterData;
+  store?: StoreRegisterData;
 }
 
 export interface ResetPasswordFormData {

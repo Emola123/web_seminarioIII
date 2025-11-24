@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import { Input } from '../common/Input';
 import { ResetPasswordFormData } from '../../types/auth.types';
 
-interface ResetPasswordProps {
-  onNavigate: (view: string) => void;
-}
-
-export const ResetPassword: React.FC<ResetPasswordProps> = ({ onNavigate }) => {
+export const ResetPassword: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<ResetPasswordFormData>({
     newPassword: '',
     confirmPassword: '',
@@ -225,7 +223,7 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ onNavigate }) => {
               Tu contraseña ha sido cambiada con éxito. Ya puedes iniciar sesión.
             </p>
             <button
-              onClick={() => onNavigate('login')}
+              onClick={() => navigate('/login')}
               style={buttonStyle}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#059669')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#10B981')}
@@ -237,7 +235,7 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ onNavigate }) => {
 
         <div style={{ textAlign: 'center', marginTop: '24px' }}>
           <button
-            onClick={() => onNavigate('login')}
+            onClick={() => navigate('/login')}
             style={linkStyle}
             onMouseEnter={(e) => (e.currentTarget.style.color = '#374151')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#6B7280')}

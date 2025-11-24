@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Store, Mail, MapPin, Phone } from 'lucide-react';
+import { Header } from '../common/Header';
 
-interface StoreProfileProps {
-  onNavigate?: (view: string) => void;
-}
-
-export const StoreProfile: React.FC<StoreProfileProps> = ({ onNavigate }) => {
+export const StoreProfile: React.FC = () => {
+  const navigate = useNavigate();
   const [storeData, setStoreData] = useState({
     nombreResponsable: '',
     correo: '',
@@ -36,7 +35,7 @@ export const StoreProfile: React.FC<StoreProfileProps> = ({ onNavigate }) => {
         const usuario = JSON.parse(usuarioString);
         console.log('Usuario desde localStorage:', usuario);
 
-        const response = await fetch(`http://localhost:8080/api/v1/stores/${usuario.id_usuario}`, {
+        const response = await fetch(`http://localhost:8081/api/v1/stores/${usuario.id_usuario}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -72,7 +71,7 @@ export const StoreProfile: React.FC<StoreProfileProps> = ({ onNavigate }) => {
 
   const handleSaveInfo = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/users/${storeData.idUsuario}`, {
+      const response = await fetch(`http://localhost:8081/api/v1/users/${storeData.idUsuario}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +96,7 @@ export const StoreProfile: React.FC<StoreProfileProps> = ({ onNavigate }) => {
 
   const handleSaveBusiness = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/stores/${storeData.idTienda}`, {
+      const response = await fetch(`http://localhost:8081/api/v1/stores/${storeData.idTienda}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -364,22 +363,15 @@ export const StoreProfile: React.FC<StoreProfileProps> = ({ onNavigate }) => {
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
-      <div style={headerStyle}>
-        <div style={logoStyle}>
-          <span style={{ color: '#10B981' }}>■</span>
-          <span>Expirapp</span>
-        </div>
-        <nav style={navStyle}>
-          <a style={navLinkStyle} onClick={() => onNavigate && onNavigate('create-product')}>Products</a>
-          <a style={{ ...navLinkStyle, color: '#10B981', fontWeight: '500' }}>My Profile</a>
-          <button style={logoutButtonStyle} onClick={() => {
+      {/* Header Centralizado */}
+      <Header 
+        variant="default" 
+        user={{ name: storeData.nombreResponsable }}
+        onLogout={() => {
             localStorage.clear();
-            onNavigate && onNavigate('login');
-          }}>Logout</button>
-          <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#D1D5DB' }}></div>
-        </nav>
-      </div>
+            navigate('/login');
+        }}
+      />
 
       {/* Content */}
       <div style={contentStyle}>

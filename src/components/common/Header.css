@@ -1,0 +1,127 @@
+.header-container {
+  background-color: white;
+  padding: 16px 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #111827;
+  text-decoration: none;
+}
+
+.header-logo-icon {
+  color: #10B981;
+  margin-right: 8px;
+}
+
+.header-nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.header-nav-link {
+  color: #6B7280;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.header-nav-link.active {
+  color: #10B981;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-logout {
+  background-color: #10B981;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-login {
+  background-color: #10B981;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-icon {
+  padding: 8px;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #6B7280;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-container {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #D1D5DB;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Utility classes for responsiveness if needed, though user asked to remove burger menu which implies simplification */
+.hidden {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .sm\:inline-flex {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:flex {
+    display: flex;
+  }
+  .lg\:hidden {
+    display: none;
+  }
+}

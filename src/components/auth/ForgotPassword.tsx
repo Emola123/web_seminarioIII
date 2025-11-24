@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Clock } from 'lucide-react';
 import { Input } from '../common/Input';
 
-interface ForgotPasswordProps {
-  onNavigate: (view: string) => void;
-}
-
-export const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onNavigate }) => {
+export const ForgotPassword: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
 
@@ -169,7 +167,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onNavigate }) =>
 
         <div style={{ textAlign: 'center', marginTop: '24px' }}>
           <button
-            onClick={() => onNavigate('login')}
+            onClick={() => navigate('/login')}
             style={linkStyle}
             onMouseEnter={(e) => (e.currentTarget.style.color = '#374151')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#6B7280')}

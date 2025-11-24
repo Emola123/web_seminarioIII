@@ -1,27 +1,15 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Lock, CreditCard, ShoppingBag, DollarSign, Edit, LucideIcon } from 'lucide-react';
+
+import { CartItem, CartStore } from '../../../types/menu.types';
 
 // --- Interfaces de Tipado ---
 
-interface CartItem {
-    itemId: number;
-    name: string;
-    salePrice: string | number; // Puede venir como string o number
-    quantity: number;
-    size?: string;
-    price?: number;
-}
-
-interface StoreData {
-    store: string;
-    items: CartItem[];
-}
-
 interface PaymentMethodProps {
-    cartData?: StoreData[];
+    cartData?: CartStore[];
     // La función para limpiar el carrito (si se pasa desde el componente App)
-    setCartData: React.Dispatch<React.SetStateAction<StoreData[]>>; 
+    setCartData: React.Dispatch<React.SetStateAction<CartStore[]>>; 
 }
 
 interface FlattenedItem {
@@ -64,7 +52,7 @@ interface OrderSuccessData {
 const Header: React.FC = () => (
     <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm">
         <div className="flex items-center justify-between w-full max-w-7xl mx-auto"> 
-            <a href="/" className="nav-logo-link font-bold text-xl text-green-600">Expirapp</a>
+            <Link to="/" className="nav-logo-link font-bold text-xl text-green-600">Expirapp</Link>
             {/* Componente de barra de progreso/navegación */}
             <nav className="hidden sm:flex text-sm space-x-2 text-gray-500 font-medium">
                 <span className="text-gray-400">Envío</span>
@@ -320,7 +308,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
             name: i.name,
             size: i.size || 'Unidad',
             // Aseguramos que price sea un número, usando salePrice o 0 si no está definido
-            price: Number(i.salePrice) || Number(i.price) || 0,
+            price: Number(i.salePrice) || Number(i.originalPrice) || 0,
             quantity: i.quantity ?? 1,
         }))
     )).filter(item => item.price > 0 && item.quantity > 0);

@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import InputField from "./InputField";
 import "./FormPublication.css";
+import { Header } from "../common/Header";
+
 
 function FormPublication() {
   const {
@@ -16,22 +18,9 @@ function FormPublication() {
   return (
     <div className="publication-page">
       <div className="publication-card">
-        {/* CABECERA: LOGO + ICONOS DERECHA */}
-        <div className="publication-header">
-          <div className="app-logo">
-            <div className="app-logo-icon">E</div>
-            <span className="app-logo-text">Expirapp</span>
-          </div>
-
-          <div className="header-actions">
-            <button className="icon-button" aria-label="Silenciar">
-              🔕
-            </button>
-            <button className="icon-button" aria-label="Configuración">
-              ⚙️
-            </button>
-            <div className="header-avatar">YA</div>
-          </div>
+        {/* CABECERA CENTRALIZADA */}
+        <div className="mb-6">
+            <Header variant="simple" />
         </div>
 
         {/* TÍTULO PRINCIPAL */}

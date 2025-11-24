@@ -1,488 +1,374 @@
 import React, { useState } from 'react';
-import { CheckCircle, MapPin, Store, Phone, Mail, Lock, CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
+import { CheckCircle, MapPin, Store, Phone, Mail, Lock } from 'lucide-react';
 import { Input } from '../common/Input';
+import { authService } from '../../services/authService';
+import { BuyerRegisterData, StoreRegisterData } from '../../types/auth.types';
+import './Register.css';
 
-interface RegisterProps {
-  onNavigate: (view: string) => void;
-}
+type RegisterFormValues = {
+  role: 'comprador' | 'vendedor';
+  // Buyer fields
+  buyerName: string;
+  buyerEmail: string;
+  buyerPassword: string;
+  buyerAddress: string;
+  // Store fields
+  storeOwnerName: string;
+  storeName: string;
+  storeAddress: string;
+  storePhone: string;
+  storeEmail: string;
+  storePassword: string;
+};
 
-export const Register: React.FC<RegisterProps> = ({ onNavigate }) => {
-  const [role, setRole] = useState<'comprador' | 'vendedor'>('comprador');
-  const [showPassword, setShowPassword] = useState(false);
+export const Register: React.FC = () => {
+  const navigate = useNavigate();
+  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<RegisterFormValues>({
+    defaultValues: {
+      role: 'comprador',
+      buyerName: '',
+      buyerEmail: '',
+      buyerPassword: '',
+      buyerAddress: '',
+      storeOwnerName: '',
+      storeName: '',
+      storeAddress: '',
+      storePhone: '',
+      storeEmail: '',
+      storePassword: '',
+    }
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  
-  // Formulario para compradores
-  const [buyerData, setBuyerData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    address: '',
-  });
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Formulario para vendedores (tiendas)
-  const [storeData, setStoreData] = useState({
-    nombreUsuario: '',      // Nombre del responsable/dueño
-    areaResponsable: '',    // Nombre del negocio
-    direccion: '',
-    telefono: '',
-    correo: '',
-    contrasena: '',
-  });
+  const currentRole = watch('role');
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
     setErrorMessage('');
     setSuccessMessage('');
 
     try {
-      if (role === 'comprador') {
-        // COMPRADOR: Registro simple
-        const payload = { 
-          nombre: buyerData.fullName,
-          correo: buyerData.email,
-          contrasena: buyerData.password,
-          direccion: buyerData.address,
-          role: 'comprador'
+      if (data.role === 'comprador') {
+        const buyerData: BuyerRegisterData = {
+          fullName: data.buyerName,
+          email: data.buyerEmail,
+          password: data.buyerPassword,
+          address: data.buyerAddress,
         };
-
-        console.log('📤 Registrando comprador:', payload);
-
-        const response = await fetch('http://localhost:8080/api/v1/users/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        const responseText = await response.text();
-        console.log('📥 Response:', responseText);
-
-        let data;
-        try {
-          data = JSON.parse(responseText);
-        } catch (parseError) {
-          throw new Error(`Respuesta inválida del servidor: ${responseText.substring(0, 100)}`);
-        }
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Error al crear la cuenta');
-        }
-
+        await authService.registerBuyer(buyerData);
         setSuccessMessage('¡Usuario creado con éxito! Redirigiendo al inicio de sesión...');
-        
       } else {
-        // VENDEDOR: Registro de tienda (crea usuario y tienda automáticamente)
-        const payload = {
-          nombre: storeData.nombreUsuario,          // Nombre del responsable
-          correo: storeData.correo,                 // Email
-          contrasena: storeData.contrasena,         // Contraseña
-          area_responsable: storeData.areaResponsable, // Nombre del negocio
-          direccion: storeData.direccion,           // Dirección
-          telefono: storeData.telefono,            // Teléfono
-          role: 'vendedor'
+        const storeData: StoreRegisterData = {
+          nombreUsuario: data.storeOwnerName,
+          areaResponsable: data.storeName,
+          direccion: data.storeAddress,
+          telefono: data.storePhone,
+          correo: data.storeEmail,
+          contrasena: data.storePassword,
         };
-
-        console.log('📤 Registrando tienda:', payload);
-
-        const response = await fetch('http://localhost:8080/api/v1/stores/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        const responseText = await response.text();
-        console.log('📥 Response:', responseText);
-
-        let data;
-        try {
-          data = JSON.parse(responseText);
-        } catch (parseError) {
-          throw new Error(`Respuesta inválida del servidor: ${responseText.substring(0, 100)}`);
-        }
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Error al crear la tienda');
-        }
-
-        console.log('✅ Tienda y usuario creados exitosamente:', data);
+        await authService.registerStore(storeData);
         setSuccessMessage('¡Tienda registrada con éxito! Redirigiendo al inicio de sesión...');
       }
 
-      // Redirigir al login después de 2 segundos
       setTimeout(() => {
-        onNavigate('login');
+        navigate('/login');
       }, 2000);
 
     } catch (error) {
-      console.error('Error en registro:', error);
-      setErrorMessage(error instanceof Error ? error.message : 'Error al crear la cuenta. Intenta nuevamente.');
+      setErrorMessage(error instanceof Error ? error.message : 'Error al crear la cuenta');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const containerStyle: React.CSSProperties = {
-    minHeight: '100vh',
-    backgroundColor: '#F9FAFB',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '16px',
-    boxSizing: 'border-box',
-  };
-
-  const cardStyle: React.CSSProperties = {
-    backgroundColor: 'white',
-    borderRadius: '16px',
-    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-    padding: '32px',
-    width: '100%',
-    maxWidth: '448px',
-    boxSizing: 'border-box',
-  };
-
-  const headerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '24px',
-    flexWrap: 'wrap',
-    gap: '12px',
-  };
-
-  const logoStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-  };
-
-  const titleStyle: React.CSSProperties = {
-    fontSize: '30px',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: '8px',
-  };
-
-  const subtitleStyle: React.CSSProperties = {
-    color: '#6B7280',
-    textAlign: 'center',
-    marginBottom: '24px',
-    fontSize: '14px',
-  };
-
-  const roleContainerStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: '12px',
-    marginBottom: '32px',
-    justifyContent: 'center',
-  };
-
-  const roleButtonStyle = (isActive: boolean): React.CSSProperties => ({
-    flex: 1,
-    padding: '12px 24px',
-    border: isActive ? '2px solid #10B981' : '2px solid #E5E7EB',
-    backgroundColor: isActive ? '#D1FAE5' : 'white',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    fontWeight: '500',
-    fontSize: '14px',
-    color: isActive ? '#065F46' : '#6B7280',
-  });
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: '8px',
-  };
-
-  const fieldContainerStyle: React.CSSProperties = {
-    marginBottom: '16px',
-    width: '100%',
-  };
-
-  const gridTwoColsStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '16px',
-    marginBottom: '16px',
-  };
-
-  const buttonPrimaryStyle: React.CSSProperties = {
-    width: '100%',
-    backgroundColor: isLoading ? '#9CA3AF' : '#10B981',
-    color: 'white',
-    padding: '12px',
-    borderRadius: '8px',
-    fontWeight: '500',
-    border: 'none',
-    cursor: isLoading ? 'not-allowed' : 'pointer',
-    transition: 'background-color 0.2s',
-  };
-
-  const buttonSecondaryStyle: React.CSSProperties = {
-    padding: '8px 16px',
-    backgroundColor: '#10B981',
-    color: 'white',
-    borderRadius: '8px',
-    fontSize: '14px',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s',
-  };
-
-  const alertSuccessStyle: React.CSSProperties = {
-    backgroundColor: '#D1FAE5',
-    border: '1px solid #10B981',
-    borderRadius: '8px',
-    padding: '12px',
-    marginBottom: '16px',
-    color: '#065F46',
-    fontSize: '14px',
-    textAlign: 'center',
-  };
-
-  const alertErrorStyle: React.CSSProperties = {
-    backgroundColor: '#FEE2E2',
-    border: '1px solid #EF4444',
-    borderRadius: '8px',
-    padding: '12px',
-    marginBottom: '16px',
-    color: '#991B1B',
-    fontSize: '14px',
-    textAlign: 'center',
-  };
-
-  const footerStyle: React.CSSProperties = {
-    textAlign: 'center',
-    fontSize: '12px',
-    color: '#6B7280',
-    marginTop: '24px',
-  };
-
   return (
-    <div style={containerStyle}>
-      <div style={cardStyle}>
-        <div style={headerStyle}>
-          <div style={logoStyle}>
+    <div className="register-container">
+      <div className="register-card">
+        <div className="register-header">
+          <div className="register-logo">
             <CheckCircle style={{ color: '#10B981' }} size={24} />
-            <span style={{ fontWeight: 'bold', fontSize: '20px' }}>Expirapp</span>
+            <span className="register-logo-text">Expirapp</span>
           </div>
           <button
-            onClick={() => onNavigate('login')}
-            style={buttonSecondaryStyle}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#059669')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#10B981')}
+            onClick={() => navigate('/login')}
+            className="register-button-secondary"
           >
             Iniciar sesión
           </button>
         </div>
 
-        <h1 style={titleStyle}>Crea tu cuenta en Expirapp</h1>
-        <p style={subtitleStyle}>
-          {role === 'comprador' 
+        <h1 className="register-title">Crea tu cuenta en Expirapp</h1>
+        <p className="register-subtitle">
+          {currentRole === 'comprador' 
             ? 'Únete a nuestra comunidad y empieza a disfrutar de productos de calidad a precios increíbles.'
             : 'Únete a Expirapp y empieza a vender productos próximos a vencer.'}
         </p>
 
-        {/* Mensajes de éxito o error */}
         {successMessage && (
-          <div style={alertSuccessStyle}>
+          <div className="alert-success">
             ✓ {successMessage}
           </div>
         )}
 
         {errorMessage && (
-          <div style={alertErrorStyle}>
+          <div className="alert-error">
             ✕ {errorMessage}
           </div>
         )}
 
-        {/* Selector de Rol */}
-        <div style={roleContainerStyle}>
+        <div className="role-container">
           <button
-            onClick={() => setRole('comprador')}
-            style={roleButtonStyle(role === 'comprador')}
+            type="button"
+            onClick={() => setValue('role', 'comprador')}
+            className={`role-button ${currentRole === 'comprador' ? 'active' : 'inactive'}`}
             disabled={isLoading}
-            onMouseEnter={(e) => {
-              if (role !== 'comprador' && !isLoading) {
-                e.currentTarget.style.borderColor = '#10B981';
-                e.currentTarget.style.backgroundColor = '#F0FDF4';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (role !== 'comprador') {
-                e.currentTarget.style.borderColor = '#E5E7EB';
-                e.currentTarget.style.backgroundColor = 'white';
-              }
-            }}
           >
             👤 Soy Comprador
           </button>
           <button
-            onClick={() => setRole('vendedor')}
-            style={roleButtonStyle(role === 'vendedor')}
+            type="button"
+            onClick={() => setValue('role', 'vendedor')}
+            className={`role-button ${currentRole === 'vendedor' ? 'active' : 'inactive'}`}
             disabled={isLoading}
-            onMouseEnter={(e) => {
-              if (role !== 'vendedor' && !isLoading) {
-                e.currentTarget.style.borderColor = '#10B981';
-                e.currentTarget.style.backgroundColor = '#F0FDF4';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (role !== 'vendedor') {
-                e.currentTarget.style.borderColor = '#E5E7EB';
-                e.currentTarget.style.backgroundColor = 'white';
-              }
-            }}
           >
             🏪 Soy Vendedor (Tengo una Tienda)
           </button>
         </div>
 
-        {/* Formulario para Compradores */}
-        {role === 'comprador' && (
-          <div>
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Nombre completo</label>
-              <Input
-                type="text"
-                placeholder="Introduce tu nombre y apellidos"
-                value={buyerData.fullName}
-                onChange={(e) => setBuyerData({ ...buyerData, fullName: e.target.value })}
-              />
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {currentRole === 'comprador' && (
+            <>
+              <div className="field-container">
+                <label className="input-label">Nombre completo</label>
+                <Controller
+                  name="buyerName"
+                  control={control}
+                  rules={{ required: 'El nombre es obligatorio' }}
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      placeholder="Introduce tu nombre y apellidos"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.buyerName && <p className="error-message">{errors.buyerName.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Correo electrónico</label>
-              <Input
-                type="email"
-                placeholder="tu.correo@ejemplo.com"
-                value={buyerData.email}
-                onChange={(e) => setBuyerData({ ...buyerData, email: e.target.value })}
-              />
-            </div>
+              <div className="field-container">
+                <label className="input-label">Correo electrónico</label>
+                <Controller
+                  name="buyerEmail"
+                  control={control}
+                  rules={{ 
+                    required: 'El correo es obligatorio',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Correo electrónico inválido'
+                    }
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      type="email"
+                      placeholder="tu.correo@ejemplo.com"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.buyerEmail && <p className="error-message">{errors.buyerEmail.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Contraseña</label>
-              <Input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Crea una contraseña segura"
-                value={buyerData.password}
-                onChange={(e) => setBuyerData({ ...buyerData, password: e.target.value })}
-                showPasswordToggle={true}
-                onTogglePassword={() => setShowPassword(!showPassword)}
-              />
-            </div>
+              <div className="field-container">
+                <label className="input-label">Contraseña</label>
+                <Controller
+                  name="buyerPassword"
+                  control={control}
+                  rules={{ 
+                    required: 'La contraseña es obligatoria',
+                    minLength: { value: 6, message: 'Mínimo 6 caracteres' }
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Crea una contraseña segura"
+                      value={field.value}
+                      onChange={field.onChange}
+                      showPasswordToggle={true}
+                      onTogglePassword={() => setShowPassword(!showPassword)}
+                    />
+                  )}
+                />
+                {errors.buyerPassword && <p className="error-message">{errors.buyerPassword.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Dirección principal</label>
-              <Input
-                type="text"
-                placeholder="Ej: Calle Falsa 123, Springfield"
-                value={buyerData.address}
-                icon={<MapPin size={18} />}
-                onChange={(e) => setBuyerData({ ...buyerData, address: e.target.value })}
-              />
-            </div>
-          </div>
-        )}
+              <div className="field-container">
+                <label className="input-label">Dirección principal</label>
+                <Controller
+                  name="buyerAddress"
+                  control={control}
+                  rules={{ required: 'La dirección es obligatoria' }}
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      placeholder="Ej: Calle Falsa 123, Springfield"
+                      value={field.value}
+                      onChange={field.onChange}
+                      icon={<MapPin size={18} />}
+                    />
+                  )}
+                />
+                {errors.buyerAddress && <p className="error-message">{errors.buyerAddress.message}</p>}
+              </div>
+            </>
+          )}
 
-        {/* Formulario para Vendedores (Tiendas) */}
-        {role === 'vendedor' && (
-          <div>
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Nombre del responsable</label>
-              <Input
-                type="text"
-                placeholder="Ej: Juan Pérez"
-                value={storeData.nombreUsuario}
-                onChange={(e) => setStoreData({ ...storeData, nombreUsuario: e.target.value })}
-                icon={<Store size={18} />}
-              />
-            </div>
+          {currentRole === 'vendedor' && (
+            <>
+              <div className="field-container">
+                <label className="input-label">Nombre del responsable</label>
+                <Controller
+                  name="storeOwnerName"
+                  control={control}
+                  rules={{ required: 'El nombre del responsable es obligatorio' }}
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      placeholder="Ej: Juan Pérez"
+                      value={field.value}
+                      onChange={field.onChange}
+                      icon={<Store size={18} />}
+                    />
+                  )}
+                />
+                {errors.storeOwnerName && <p className="error-message">{errors.storeOwnerName.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Área responsable / Nombre del negocio</label>
-              <Input
-                type="text"
-                placeholder="Ej: Super Ahorro"
-                value={storeData.areaResponsable}
-                onChange={(e) => setStoreData({ ...storeData, areaResponsable: e.target.value })}
-                icon={<Store size={18} />}
-              />
-            </div>
+              <div className="field-container">
+                <label className="input-label">Área responsable / Nombre del negocio</label>
+                <Controller
+                  name="storeName"
+                  control={control}
+                  rules={{ required: 'El nombre del negocio es obligatorio' }}
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      placeholder="Ej: Super Ahorro"
+                      value={field.value}
+                      onChange={field.onChange}
+                      icon={<Store size={18} />}
+                    />
+                  )}
+                />
+                {errors.storeName && <p className="error-message">{errors.storeName.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Dirección</label>
-              <Input
-                type="text"
-                placeholder="Ej: Av. Siempre Viva 742"
-                value={storeData.direccion}
-                onChange={(e) => setStoreData({ ...storeData, direccion: e.target.value })}
-                icon={<MapPin size={18} />}
-              />
-            </div>
+              <div className="field-container">
+                <label className="input-label">Dirección</label>
+                <Controller
+                  name="storeAddress"
+                  control={control}
+                  rules={{ required: 'La dirección es obligatoria' }}
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      placeholder="Ej: Av. Siempre Viva 742"
+                      value={field.value}
+                      onChange={field.onChange}
+                      icon={<MapPin size={18} />}
+                    />
+                  )}
+                />
+                {errors.storeAddress && <p className="error-message">{errors.storeAddress.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Número de contacto</label>
-              <Input
-                type="tel"
-                placeholder="Ej: 3012345678"
-                value={storeData.telefono}
-                onChange={(e) => setStoreData({ ...storeData, telefono: e.target.value })}
-                icon={<Phone size={18} />}
-              />
-            </div>
+              <div className="field-container">
+                <label className="input-label">Número de contacto</label>
+                <Controller
+                  name="storePhone"
+                  control={control}
+                  rules={{ required: 'El teléfono es obligatorio' }}
+                  render={({ field }) => (
+                    <Input
+                      type="tel"
+                      placeholder="Ej: 3012345678"
+                      value={field.value}
+                      onChange={field.onChange}
+                      icon={<Phone size={18} />}
+                    />
+                  )}
+                />
+                {errors.storePhone && <p className="error-message">{errors.storePhone.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Correo electrónico</label>
-              <Input
-                type="email"
-                placeholder="tu.tienda@correo.com"
-                value={storeData.correo}
-                onChange={(e) => setStoreData({ ...storeData, correo: e.target.value })}
-                icon={<Mail size={18} />}
-              />
-            </div>
+              <div className="field-container">
+                <label className="input-label">Correo electrónico</label>
+                <Controller
+                  name="storeEmail"
+                  control={control}
+                  rules={{ 
+                    required: 'El correo es obligatorio',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Correo electrónico inválido'
+                    }
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      type="email"
+                      placeholder="tu.tienda@correo.com"
+                      value={field.value}
+                      onChange={field.onChange}
+                      icon={<Mail size={18} />}
+                    />
+                  )}
+                />
+                {errors.storeEmail && <p className="error-message">{errors.storeEmail.message}</p>}
+              </div>
 
-            <div style={fieldContainerStyle}>
-              <label style={labelStyle}>Contraseña</label>
-              <Input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Mínimo 8 caracteres"
-                value={storeData.contrasena}
-                onChange={(e) => setStoreData({ ...storeData, contrasena: e.target.value })}
-                icon={<Lock size={18} />}
-                showPasswordToggle={true}
-                onTogglePassword={() => setShowPassword(!showPassword)}
-              />
-            </div>
-          </div>
-        )}
+              <div className="field-container">
+                <label className="input-label">Contraseña</label>
+                <Controller
+                  name="storePassword"
+                  control={control}
+                  rules={{ 
+                    required: 'La contraseña es obligatoria',
+                    minLength: { value: 8, message: 'Mínimo 8 caracteres' }
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Mínimo 8 caracteres"
+                      value={field.value}
+                      onChange={field.onChange}
+                      icon={<Lock size={18} />}
+                      showPasswordToggle={true}
+                      onTogglePassword={() => setShowPassword(!showPassword)}
+                    />
+                  )}
+                />
+                {errors.storePassword && <p className="error-message">{errors.storePassword.message}</p>}
+              </div>
+            </>
+          )}
 
-        <button
-          onClick={handleSubmit}
-          style={buttonPrimaryStyle}
-          disabled={isLoading}
-          onMouseEnter={(e) => {
-            if (!isLoading) {
-              e.currentTarget.style.backgroundColor = '#059669';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isLoading) {
-              e.currentTarget.style.backgroundColor = '#10B981';
-            }
-          }}
-        >
-          {isLoading ? 'Creando cuenta...' : 'Crear mi cuenta'}
-        </button>
+          <button
+            type="submit"
+            className="register-button-primary"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Creando cuenta...' : 'Crear mi cuenta'}
+          </button>
+        </form>
 
-        <p style={footerStyle}>
+        <p className="register-footer">
           © 2024 Expirapp. Todos los derechos reservados.
         </p>
       </div>

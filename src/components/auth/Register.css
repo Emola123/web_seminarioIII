@@ -1,0 +1,171 @@
+.register-container {
+  min-height: 100vh;
+  background-color: #F9FAFB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.register-card {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  width: 100%;
+  max-width: 448px;
+  box-sizing: border-box;
+}
+
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.register-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.register-logo-text {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.register-title {
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.register-subtitle {
+  color: #6B7280;
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.role-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  justify-content: center;
+}
+
+.role-button {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.role-button.active {
+  border: 2px solid #10B981;
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.role-button.inactive {
+  border: 2px solid #E5E7EB;
+  background-color: white;
+  color: #6B7280;
+}
+
+.role-button.inactive:hover {
+  border-color: #10B981;
+  background-color: #F0FDF4;
+}
+
+.field-container {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.input-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.register-button-primary {
+  width: 100%;
+  background-color: #10B981;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.register-button-primary:disabled {
+  background-color: #9CA3AF;
+  cursor: not-allowed;
+}
+
+.register-button-primary:not(:disabled):hover {
+  background-color: #059669;
+}
+
+.register-button-secondary {
+  padding: 8px 16px;
+  background-color: #10B981;
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.register-button-secondary:hover {
+  background-color: #059669;
+}
+
+.alert-success {
+  background-color: #D1FAE5;
+  border: 1px solid #10B981;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #065F46;
+  font-size: 14px;
+  text-align: center;
+}
+
+.alert-error {
+  background-color: #FEE2E2;
+  border: 1px solid #EF4444;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #991B1B;
+  font-size: 14px;
+  text-align: center;
+}
+
+.register-footer {
+  text-align: center;
+  font-size: 12px;
+  color: #6B7280;
+  margin-top: 24px;
+}
+
+.error-message {
+  color: #EF4444;
+  font-size: 12px;
+  margin-top: 4px;
+}
