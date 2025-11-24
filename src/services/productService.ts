@@ -14,30 +14,59 @@ export const productService = {
       if (contentType.includes('application/json')) {
         json = await res.json();
       } else {
-        console.warn('Received non-JSON response, falling back to mock data');
+        console.warn('Received non-JSON response, using mock data');
         return MOCK_PRODUCTS;
       }
 
-      const list: any[] = json.productos || json.products || json.data || [];
+      const list: any[] =
+        json.productos || json.products || json.data || [];
 
-      return list.map(p => ({
-        id: p.id_producto ?? p.id ?? Math.random(),
-        name: p.nombre ?? p.name ?? 'Producto',
-        price: typeof p.precio !== 'undefined' ? p.precio : (p.price ?? 0),
-        fecha_vencimiento: p.fecha_vencimiento ?? p.expiryDate ?? null,
-        stock: typeof p.stock !== 'undefined' ? p.stock : (p.cantidad ?? null),
-        descripcion: p.descripcion ?? p.description ?? '',
-        imageUrl: p.imagen ?? p.imageUrl ?? p.image ?? p.url_imagen ?? `https://placehold.co/300x300/cccccc/333333?text=${encodeURIComponent((p.nombre || p.name || 'Producto').substring(0, 10))}`,
-        location: 'Ubicación Desconocida',
-        distance: '0 km',
-        badge: p.precio === 0 ? 'Donación' : (p.descuento ? 'Oferta' : undefined),
-        originalPrice: p.precio_original
-      }));
+      return list.map((p) => {
+        // Construcción correcta de la imagen
+        let img =
+          p.imagen_url ??
+          p.imagen ??
+          p.imageUrl ??
+          p.image ??
+          null;
+
+        // Si la imagen existe pero es ruta relativa → convertirla en absoluta
+        if (img) {
+          if (!img.startsWith('http')) {
+            img = `http://localhost:8081${img.replace(/^\/+/, '/')}`;
+          }
+        } else {
+          // Imagen por defecto si viene null o no existe
+          img = `https://placehold.co/300x300/cccccc/333333?text=${encodeURIComponent(
+            (p.nombre || p.name || 'Producto').substring(0, 10)
+          )}`;
+        }
+
+        return {
+          id: p.id_producto ?? p.id ?? Math.random(),
+          name: p.nombre ?? p.name ?? 'Producto',
+          price: p.precio ?? p.price ?? 0,
+          originalPrice: p.precio_original ?? null,
+          descripcion: p.descripcion ?? p.description ?? '',
+          fecha_vencimiento: p.fecha_vencimiento ?? null,
+          stock: p.stock ?? p.cantidad ?? null,
+          imageUrl: img,
+          location: 'Ubicación Desconocida',
+          distance: '0 km',
+          badge:
+            p.precio === 0
+              ? 'Donación'
+              : p.descuento
+              ? 'Oferta'
+              : undefined,
+        };
+      });
+
     } catch (error) {
       console.error('Error fetching products, using mock data:', error);
       return MOCK_PRODUCTS;
     }
-  }
+  },
 };
 
 const MOCK_PRODUCTS: Product[] = [

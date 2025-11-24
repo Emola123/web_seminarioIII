@@ -7,7 +7,7 @@ export interface Product {
   originalPrice?: number; 
   badge?: 'Oferta' | 'Donación' | string; 
   imageUrl: string;
-  location: string;
+  location?: string;
   distance?: string;
   icon?: ReactElement<any, any>;
   descripcion?: string;
@@ -15,6 +15,24 @@ export interface Product {
   stock?: number | null;
   brand?: string;
   size?: string;
+}
+// Lo que devuelve el backend
+export interface ApiProduct {
+  id_producto: number;
+  nombre: string;
+  descripcion: string;
+  imagen_url: string;
+  precio: number;
+  fecha_vencimiento: string;
+  stock: number;
+  estado: string;
+}
+
+export interface ProductsApiResponse {
+  productos: ApiProduct[];
+  total: number;
+  pagina: number;
+  limite: number;
 }
 
 export interface CartItem {
