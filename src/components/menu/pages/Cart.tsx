@@ -133,9 +133,9 @@ const Footer: React.FC = () => (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
             <p>© 2025 Expirapp. Todos los derechos reservados.</p>
             <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 md:mt-0">
-                <a href="#" className="hover:text-green-600 px-2">Ayuda</a>
-                <a href="#" className="hover:text-green-600 px-2">Términos</a>
-                <a href="#" className="hover:text-green-600 px-2">Privacidad</a>
+                <button className="hover:text-green-600 px-2">Ayuda</button>
+                <button className="hover:text-green-600 px-2">Términos</button>
+                <button className="hover:text-green-600 px-2">Privacidad</button>
             </div>
         </div>
     </footer>

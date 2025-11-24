@@ -80,9 +80,9 @@ const Header: React.FC = () => (
 const Footer: React.FC = () => (
     <footer className="w-full bg-white mt-12 py-6 border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-center items-center text-sm text-gray-500 gap-x-4 gap-y-2 md:gap-x-8">
-            <a href="#" className="hover:text-green-600 px-2">Términos y condiciones</a>
-            <a href="#" className="hover:text-green-600 px-2">Política de privacidad</a>
-            <a href="#" className="hover:text-green-600 px-2">Ayuda</a>
+            <button className="hover:text-green-600 px-2">Terminos y condiciones </button>
+            <button className="hover:text-green-600 px-2">Politica de privacidad</button>
+            <button className="hover:text-green-600 px-2">Ayuda</button>
         </div>
     </footer>
 );
