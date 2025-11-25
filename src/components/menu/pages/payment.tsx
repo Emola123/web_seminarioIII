@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Truck, Store, LucideIcon } from 'lucide-react';
+import './Payment.css';
 
 // --- Interfaces de Tipado ---
 
@@ -27,10 +28,10 @@ interface DeliveryOptionProps extends DeliveryOptionData {
 // --- Subcomponentes ---
 
 const Header: React.FC = () => (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm">
-        <div className="flex items-center justify-center w-full max-w-7xl mx-auto"> 
+    <header className="payment-header">
+        <div className="header-content">
             {/* Usamos un enlace simple para simular la navegación, ajustado con clases de Tailwind */}
-            <Link to="/" className="nav-logo-link font-bold text-xl text-green-600">Expirapp</Link>
+            <Link to="/" className="nav-logo-link">Expirapp</Link>
         </div>
     </header>
 );
@@ -38,56 +39,45 @@ const Header: React.FC = () => (
 /**
  * Componente que representa una opción de método de entrega/recogida.
  */
-const DeliveryOption: React.FC<DeliveryOptionProps> = ({ 
-    id, 
-    icon: Icon, 
-    title, 
-    description, 
-    isDisabled, 
-    isSelected, 
-    onSelect 
+const DeliveryOption: React.FC<DeliveryOptionProps> = ({
+    id,
+    icon: Icon,
+    title,
+    description,
+    isDisabled,
+    isSelected,
+    onSelect
 }) => {
-    const baseClasses = "flex items-center justify-between p-5 border-2 rounded-xl transition-all duration-200 cursor-pointer";
-    
-    // Clases condicionales basadas en el estado
-    const statusClasses = isDisabled
-        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed opacity-70"
-        : isSelected
-            ? "bg-green-50 border-green-600 shadow-lg ring-4 ring-green-100"
-            : "bg-white border-gray-300 hover:border-green-400 hover:shadow-md";
-
     return (
         <label
             htmlFor={id}
-            className={`${baseClasses} ${statusClasses} mb-4`}
+            className={`delivery-option-card ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
             onClick={() => !isDisabled && onSelect(id)}
         >
-            <div className="flex items-start">
+            <div className="option-content">
                 {/* Icono */}
-                <div className={`p-3 rounded-full mr-4 flex-shrink-0 
-                    ${isDisabled ? 'bg-gray-300' : 'bg-green-100 text-green-600'}`}>
+                <div className="option-icon-wrapper">
                     <Icon size={24} />
                 </div>
-                
+
                 {/* Texto de la opción */}
-                <div className="flex flex-col justify-start">
-                    <h3 className={`font-semibold text-lg ${isDisabled ? 'text-gray-400' : 'text-gray-800'}`}>{title}</h3>
-                    <p className={`text-sm mt-1 ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>
+                <div className="option-text">
+                    <h3 className="option-title">{title}</h3>
+                    <p className="option-description">{description}</p>
                 </div>
             </div>
 
             {/* Radio Button Personalizado (solo visible si no está deshabilitado) */}
             {!isDisabled && (
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ml-4 
-                    ${isSelected ? 'border-green-600 bg-white' : 'border-gray-400'}`}>
+                <div className="option-radio">
                     {isSelected && (
-                        <div className="w-2.5 h-2.5 bg-green-600 rounded-full"></div>
+                        <div className="radio-inner"></div>
                     )}
                 </div>
             )}
-            
+
             {/* El input radio real, oculto */}
-            <input 
+            <input
                 type="radio"
                 id={id}
                 name="delivery_method"
@@ -106,7 +96,7 @@ const DeliveryOption: React.FC<DeliveryOptionProps> = ({
 
 const Payment: React.FC = () => {
     // Estado para la opción de entrega seleccionada
-    const [selectedOption, setSelectedOption] = useState<string>('pickup'); 
+    const [selectedOption, setSelectedOption] = useState<string>('pickup');
 
     // Opciones de entrega (datos simulados tipados)
     const options: DeliveryOptionData[] = [
@@ -144,23 +134,23 @@ const Payment: React.FC = () => {
     };
 
     // Determina si el botón Continuar debe estar habilitado
-    const isContinueEnabled = !!selectedOption && 
-                              options.some(opt => opt.id === selectedOption && !opt.isDisabled);
+    const isContinueEnabled = !!selectedOption &&
+        options.some(opt => opt.id === selectedOption && !opt.isDisabled);
 
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans w-full flex flex-col">
+        <div className="payment-page">
             <Header />
 
-            <main className="flex-grow max-w-xl mx-auto w-full p-4 sm:p-6 lg:p-8">
-                
+            <main className="payment-container">
+
                 {/* Título */}
-                <h2 className="text-3xl font-bold text-gray-800 text-center mb-8 sm:mb-12">
+                <h2 className="payment-title">
                     Elige cómo recibir tu pedido
                 </h2>
 
                 {/* Lista de Opciones */}
-                <div className="flex flex-col">
+                <div className="payment-options-list">
                     {options.map((option) => (
                         <DeliveryOption
                             key={option.id}
@@ -172,16 +162,11 @@ const Payment: React.FC = () => {
                 </div>
 
                 {/* Botón Continuar */}
-                <div className="mt-8">
+                <div className="payment-actions">
                     <button
-                        className={`w-full py-4 font-semibold rounded-xl shadow-lg transition duration-150
-                            ${isContinueEnabled
-                                ? 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-80'
-                            }
-                        `}
+                        className="btn-continue"
                         disabled={!isContinueEnabled}
-                        onClick={() => { 
+                        onClick={() => {
                             // Navegar a la selección de método de pago y pasar la opción seleccionada
                             if (isContinueEnabled) {
                                 navigate('/payment/method', { state: { selectedOption } });
@@ -193,7 +178,7 @@ const Payment: React.FC = () => {
                 </div>
 
                 {/* Espacio para asegurar que el contenido no quede pegado al fondo */}
-                <div className="h-16"></div> 
+                <div className="spacer"></div>
             </main>
         </div>
     );

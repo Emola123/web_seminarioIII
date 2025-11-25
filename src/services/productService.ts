@@ -13,13 +13,20 @@ export const productService = {
 
       if (contentType.includes('application/json')) {
         json = await res.json();
+        console.log('API Response (GetAllProducts):', json);
       } else {
         console.warn('Received non-JSON response, using mock data');
         return MOCK_PRODUCTS;
       }
 
+      // Intentar extraer la lista de varias formas posibles
       const list: any[] =
-        json.productos || json.products || json.data || [];
+        (Array.isArray(json) ? json : null) ||
+        json.productos ||
+        json.products ||
+        json.data ||
+        json.items ||
+        [];
 
       return list.map((p) => {
         // Construcción correcta de la imagen
@@ -30,10 +37,15 @@ export const productService = {
           p.image ??
           null;
 
-        // Si la imagen existe pero es ruta relativa → convertirla en absoluta
+        // Si la imagen existe
         if (img) {
+          // Normalizar slashes (Windows uses backslashes)
+          img = img.replace(/\\/g, '/');
+
           if (!img.startsWith('http')) {
-            img = `http://localhost:8081${img.replace(/^\/+/, '/')}`;
+            // Si es ruta relativa, convertirla en absoluta
+            const cleanPath = img.replace(/^\/+/, '');
+            img = `http://localhost:8081/${cleanPath}`;
           }
         } else {
           // Imagen por defecto si viene null o no existe
@@ -51,14 +63,15 @@ export const productService = {
           fecha_vencimiento: p.fecha_vencimiento ?? null,
           stock: p.stock ?? p.cantidad ?? null,
           imageUrl: img,
-          location: 'Ubicación Desconocida',
+          location: p.nombre_tienda || p.tienda?.nombre || p.store?.name || 'Ubicación Desconocida',
           distance: '0 km',
           badge:
             p.precio === 0
               ? 'Donación'
               : p.descuento
-              ? 'Oferta'
-              : undefined,
+                ? 'Oferta'
+                : undefined,
+          storeId: p.id_tienda,
         };
       });
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Lock, CreditCard, ShoppingBag, DollarSign, Edit, LucideIcon } from 'lucide-react';
+import './PaymentMethod.css';
 
 import { CartItem, CartStore } from '../../../types/menu.types';
 
@@ -9,7 +10,7 @@ import { CartItem, CartStore } from '../../../types/menu.types';
 interface PaymentMethodProps {
     cartData?: CartStore[];
     // La función para limpiar el carrito (si se pasa desde el componente App)
-    setCartData: React.Dispatch<React.SetStateAction<CartStore[]>>; 
+    setCartData: React.Dispatch<React.SetStateAction<CartStore[]>>;
 }
 
 interface FlattenedItem {
@@ -50,27 +51,27 @@ interface OrderSuccessData {
 // --- Subcomponentes de Navegación y Encabezado ---
 
 const Header: React.FC = () => (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between w-full max-w-7xl mx-auto"> 
-            <Link to="/" className="nav-logo-link font-bold text-xl text-green-600">Expirapp</Link>
+    <header className="payment-method-header">
+        <div className="header-content">
+            <Link to="/" className="nav-logo-link">Expirapp</Link>
             {/* Componente de barra de progreso/navegación */}
-            <nav className="hidden sm:flex text-sm space-x-2 text-gray-500 font-medium">
-                <span className="text-gray-400">Envío</span>
+            <nav className="nav-breadcrumbs">
+                <span className="breadcrumb-item">Envío</span>
                 <span>&gt;</span>
-                <span className="text-green-600 font-bold">Pago</span>
+                <span className="breadcrumb-item breadcrumb-active">Pago</span>
                 <span>&gt;</span>
-                <span className="text-gray-400">Confirmación</span>
+                <span className="breadcrumb-item">Confirmación</span>
             </nav>
         </div>
     </header>
 );
 
 const Footer: React.FC = () => (
-    <footer className="w-full bg-white mt-12 py-6 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-center items-center text-sm text-gray-500 gap-x-4 gap-y-2 md:gap-x-8">
-            <button className="hover:text-green-600 px-2">Terminos y condiciones </button>
-            <button className="hover:text-green-600 px-2">Politica de privacidad</button>
-            <button className="hover:text-green-600 px-2">Ayuda</button>
+    <footer className="payment-footer">
+        <div className="footer-content">
+            <button className="footer-link">Terminos y condiciones </button>
+            <button className="footer-link">Politica de privacidad</button>
+            <button className="footer-link">Ayuda</button>
         </div>
     </footer>
 );
@@ -81,49 +82,42 @@ const Footer: React.FC = () => (
 /**
  * Tarjeta de opción de pago estilizada
  */
-const PaymentOptionCard: React.FC<PaymentOptionCardProps> = ({ 
-    id, 
-    icon: Icon, 
-    title, 
-    description, 
-    isDisabled = false, 
-    isSelected, 
-    onSelect, 
-    children 
+const PaymentOptionCard: React.FC<PaymentOptionCardProps> = ({
+    id,
+    icon: Icon,
+    title,
+    description,
+    isDisabled = false,
+    isSelected,
+    onSelect,
+    children
 }) => {
-    const baseClasses = "flex flex-col p-5 border-2 rounded-xl transition-all duration-200";
-    
-    // Clases condicionales basadas en el estado
-    const statusClasses = isDisabled
-        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed opacity-70"
-        : isSelected
-            ? "bg-green-50 border-green-600 shadow-lg ring-4 ring-green-100 cursor-pointer"
-            : "bg-white border-gray-300 hover:border-green-400 hover:shadow-md cursor-pointer";
-
     return (
-        <div className={`${baseClasses} ${statusClasses}`} onClick={() => !isDisabled && onSelect(id)}>
-            <div className="flex items-start justify-between">
-                <div className="flex items-start">
+        <div
+            className={`payment-option-card ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+            onClick={() => !isDisabled && onSelect(id)}
+        >
+            <div className="card-header">
+                <div className="card-content-wrapper">
                     {/* Icono */}
                     {Icon && (
-                        <div className={`p-1 mr-3 flex-shrink-0 ${isDisabled ? 'text-gray-400' : 'text-green-600'}`}>
+                        <div className="card-icon-wrapper">
                             <Icon size={24} />
                         </div>
                     )}
-                    
+
                     {/* Título de la opción */}
-                    <div className="flex flex-col justify-start">
-                        <h3 className={`font-semibold text-lg ${isDisabled ? 'text-gray-400' : 'text-gray-800'}`}>{title}</h3>
-                        {description && <p className={`text-sm mt-1 ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>}
+                    <div className="card-text">
+                        <h3 className="card-title">{title}</h3>
+                        {description && <p className="card-description">{description}</p>}
                     </div>
                 </div>
 
-                {/* Radio Button Personalizado (solo visible si no está deshabilitado) */}
+                {/* Radio Button Personalizado */}
                 {!isDisabled && (
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ml-4 
-                        ${isSelected ? 'border-green-600 bg-white' : 'border-gray-400'}`}>
+                    <div className="card-radio">
                         {isSelected && (
-                            <div className="w-2.5 h-2.5 bg-green-600 rounded-full"></div>
+                            <div className="card-radio-inner"></div>
                         )}
                     </div>
                 )}
@@ -131,7 +125,7 @@ const PaymentOptionCard: React.FC<PaymentOptionCardProps> = ({
 
             {/* Contenido adicional (Formulario) */}
             {children && isSelected && (
-                <div className="mt-4 pt-4 border-t border-gray-100 transition-all duration-300">
+                <div className="card-form-container">
                     {children}
                 </div>
             )}
@@ -140,66 +134,66 @@ const PaymentOptionCard: React.FC<PaymentOptionCardProps> = ({
 };
 
 const CardForm: React.FC = () => (
-    <div className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="form-grid">
+        <div className="form-row">
             {/* Número de tarjeta */}
-            <div>
-                <label htmlFor="cardNumber" className="text-xs font-medium text-gray-500 block mb-1">
+            <div className="form-group">
+                <label htmlFor="cardNumber" className="form-label">
                     Número de tarjeta
                 </label>
                 <input
                     id="cardNumber"
                     type="text"
                     placeholder="**** **** **** ****"
-                    className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-green-500 focus:border-green-500"
+                    className="form-input"
                 />
             </div>
-            
+
             {/* Nombre del titular */}
-            <div>
-                <label htmlFor="cardHolder" className="text-xs font-medium text-gray-500 block mb-1">
+            <div className="form-group">
+                <label htmlFor="cardHolder" className="form-label">
                     Nombre del titular
                 </label>
                 <input
                     id="cardHolder"
                     type="text"
                     placeholder="Nombre completo"
-                    className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-green-500 focus:border-green-500"
+                    className="form-input"
                 />
             </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 max-w-sm">
+        <div className="form-row">
             {/* Fecha de vencimiento */}
-            <div>
-                <label htmlFor="expiry" className="text-xs font-medium text-gray-500 block mb-1">
+            <div className="form-group">
+                <label htmlFor="expiry" className="form-label">
                     Fecha de vencimiento
                 </label>
                 <input
                     id="expiry"
                     type="text"
                     placeholder="MM/AA"
-                    className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-green-500 focus:border-green-500"
+                    className="form-input"
                 />
             </div>
-            
+
             {/* CVV */}
-            <div>
-                <label htmlFor="cvv" className="text-xs font-medium text-gray-500 block mb-1">
+            <div className="form-group">
+                <label htmlFor="cvv" className="form-label">
                     CVV
                 </label>
                 <input
                     id="cvv"
                     type="password"
                     placeholder="***"
-                    className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-green-500 focus:border-green-500"
+                    className="form-input"
                 />
             </div>
         </div>
 
         {/* Mensaje de seguridad */}
-        <div className="flex items-center text-sm text-gray-500 pt-2">
-            <Lock size={16} className="mr-2 text-green-500" />
+        <div className="security-note">
+            <Lock size={16} className="security-icon" />
             <span>Tu información de pago está cifrada y segura.</span>
         </div>
     </div>
@@ -208,57 +202,57 @@ const CardForm: React.FC = () => (
 /**
  * Componente que muestra el resumen del pedido a la derecha
  */
-const OrderSummary: React.FC<OrderSummaryProps> = ({ 
-    items, 
-    subtotal, 
-    shipping, 
-    taxes, 
-    total, 
-    onPay, 
-    isProcessing 
+const OrderSummary: React.FC<OrderSummaryProps> = ({
+    items,
+    subtotal,
+    shipping,
+    taxes,
+    total,
+    onPay,
+    isProcessing
 }) => (
-    <div className="bg-white rounded-xl shadow-lg p-6 lg:p-8 sticky top-8 border border-gray-100">
-        <h3 className="text-xl font-semibold text-gray-800 pb-4 border-b border-gray-200 mb-4">
+    <div className="summary-card">
+        <h3 className="summary-header">
             Tu pedido
         </h3>
-        
+
         {/* Lista de Productos */}
-        <div className="space-y-3 text-sm text-gray-600 pb-4 border-b border-gray-100 max-h-40 overflow-y-auto">
+        <div className="summary-items-list">
             {items.map((item, index) => {
                 const lineTotal = item.price * item.quantity;
                 return (
-                    <div key={index} className="flex justify-between">
-                        <span className="truncate pr-2">{item.name} {item.quantity > 1 ? `x${item.quantity}` : ''} ({item.size})</span>
-                        <span className="font-medium text-gray-800">${lineTotal.toFixed(2)}</span>
+                    <div key={index} className="summary-item">
+                        <span className="item-name">{item.name} {item.quantity > 1 ? `x${item.quantity}` : ''} ({item.size})</span>
+                        <span className="item-price">${lineTotal.toFixed(2)}</span>
                     </div>
                 );
             })}
-            <button className="text-green-600 font-medium text-xs pt-2 flex items-center hover:text-green-700 transition">
+            <button className="btn-edit-cart">
                 <Edit size={14} className="mr-1" />
-                <a href="/cart" className="nav-link">Editar carrito</a>
+                <a href="/cart" style={{ color: 'inherit', textDecoration: 'none' }}>Editar carrito</a>
             </button>
         </div>
 
         {/* Desglose de Precios */}
-        <div className="space-y-2 text-sm text-gray-600 mt-4 pb-4 border-b border-gray-100">
-            <div className="flex justify-between">
+        <div className="summary-costs">
+            <div className="cost-row">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="cost-row">
                 <span>Envío</span>
-                <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
+                <span className={shipping === 0 ? 'cost-free' : ''}>
                     {shipping === 0 ? 'Gratis' : `$${shipping.toFixed(2)}`}
                 </span>
             </div>
-            <div className="flex justify-between">
+            <div className="cost-row">
                 <span>Impuestos (19%)</span>
                 <span>${taxes.toFixed(2)}</span>
             </div>
         </div>
 
         {/* Total Final */}
-        <div className="mt-4 pt-4 flex justify-between items-center text-2xl font-extrabold text-gray-800">
+        <div className="summary-total">
             <span>Total</span>
             <span>${total.toFixed(2)}</span>
         </div>
@@ -267,17 +261,16 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         <button
             onClick={onPay}
             disabled={isProcessing}
-            className={`w-full mt-6 py-3 font-semibold rounded-xl shadow-lg transition duration-150 transform hover:scale-[1.005]
-                ${isProcessing ? 'bg-gray-300 text-gray-600 cursor-not-allowed opacity-80' : 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800'}`}
+            className="btn-pay"
         >
             {isProcessing ? (
-                <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <>
+                    <svg className="spinner h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Procesando...
-                </span>
+                </>
             ) : 'Pagar ahora'}
         </button>
     </div>
@@ -288,13 +281,13 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 
 const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartData }) => {
     // Estado para la opción de pago seleccionada
-    const [selectedPayment, setSelectedPayment] = useState<string>('card'); 
-    
+    const [selectedPayment, setSelectedPayment] = useState<string>('card');
+
     // Leer la opción de entrega seleccionada desde la navegación
     const location = useLocation();
     // Tipado inferido como string | undefined | null. Asumimos string si existe.
     const selectedDelivery: string | undefined = (location.state as { selectedOption?: string })?.selectedOption;
-    
+
     const navigate = useNavigate();
 
     // Estado para manejo de petición de orden
@@ -331,33 +324,58 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
     // Función para enviar la orden al backend
     const postOrder = async () => {
         // Validación mínima
-        if (flattenedItems.length === 0) {
+        if (cartData.length === 0) {
             setOrderError('El carrito está vacío. Por favor, añade productos.');
+            return;
+        }
+
+        // Obtener ID del cliente desde localStorage
+        const userStr = localStorage.getItem('usuario');
+        const user = userStr ? JSON.parse(userStr) : null;
+        const id_cliente = user?.id_usuario || user?.id;
+
+        if (!id_cliente) {
+            setOrderError('No se pudo identificar al usuario. Por favor, inicia sesión nuevamente.');
             return;
         }
 
         setIsProcessing(true);
         setOrderError(null);
-        
-        // Simulación de Exponential Backoff para reintentos (aunque solo se ejecuta una vez aquí)
-        const MAX_RETRIES = 3;
-        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            try {
-                // Aquí deberías tener la lógica para obtener id_cliente y id_tienda reales
-                const payload = {
-                    id_cliente: 12345, // ID simulado
-                    id_tienda: 678, // ID simulado (asumiendo que es una orden única)
-                    fecha_compra: new Date().toISOString(),
-                    metodo_entrega: selectedDelivery,
-                    metodo_pago: selectedPayment,
-                    total_pedido: total.toFixed(2),
-                    items: flattenedItems.map(i => ({
-                        item_id: i.name, // Usando nombre como ID temporal
-                        cantidad: i.quantity,
-                        precio_unitario: i.price,
-                    }))
-                };
 
+        const results: { store: string; success: boolean; orderId?: number; error?: string }[] = [];
+
+        // Iterar sobre cada tienda en el carrito para crear una orden por tienda
+        for (const store of cartData) {
+            // Calcular totales por tienda
+            const storeItems = store.items.map(i => {
+                // Extraer ID numérico si es posible (formato "p-123")
+                const idMatch = i.itemId.match(/p-(\d+)/);
+                const numericId = idMatch ? parseInt(idMatch[1]) : i.itemId;
+
+                return {
+                    item_id: numericId,
+                    cantidad: i.quantity,
+                    precio_unitario: Number(i.salePrice) || Number(i.originalPrice) || 0
+                };
+            });
+
+            const storeSubtotal = storeItems.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0);
+            // Asumimos envío por tienda si no es pickup
+            const storeShipping = (selectedDelivery && !selectedDelivery.includes('pickup')) ? 5000 : 0;
+            const storeTaxes = storeSubtotal * 0.19;
+            const storeTotal = storeSubtotal + storeShipping + storeTaxes;
+
+            const payload = {
+                id_cliente: id_cliente,
+                id_tienda: store.id,
+                fecha_compra: new Date().toISOString(),
+                metodo_entrega: selectedDelivery,
+                metodo_pago: selectedPayment,
+                total_pedido: storeTotal.toFixed(2),
+                items: storeItems
+            };
+
+            try {
                 const res = await fetch('http://localhost:8081/api/v1/orders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -365,69 +383,72 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
                 });
 
                 if (!res.ok) {
-                    const text = await res.text().catch(() => 'Error de red o servidor.');
-                    // Si falla por un error del servidor, intentar de nuevo.
-                    if (res.status >= 500 && attempt < MAX_RETRIES - 1) {
-                        const delay = Math.pow(2, attempt) * 1000;
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        continue; // Reintentar
-                    }
-                    throw new Error(`Error ${res.status}: ${text || res.statusText}`);
+                    const text = await res.text().catch(() => '');
+                    throw new Error(`Error ${res.status}: ${text}`);
                 }
 
-                const data: OrderSuccessData = await res.json().catch(() => ({ message: 'Orden creada, no se recibió confirmación JSON.' }));
-                
-                // Éxito:
-                setOrderSuccess(data);
-                setIsProcessing(false);
-                return; // Salir de la función al tener éxito
+                const data = await res.json().catch(() => ({}));
+                results.push({ store: store.store, success: true, orderId: data.orderId || data.id });
 
             } catch (err: any) {
-                console.error('Error creando orden (Intento ' + (attempt + 1) + '):', err);
-                if (attempt === MAX_RETRIES - 1) {
-                    setOrderError(err.message || 'Error desconocido al intentar completar el pedido.');
-                }
-                // Si el error es de cliente (4xx) o el último intento, no reintentar.
-                if (err.message && (err.message.includes('Error 4') || attempt === MAX_RETRIES - 1)) {
-                    break;
-                }
+                console.error(`Error creando orden para tienda ${store.store}:`, err);
+                results.push({ store: store.store, success: false, error: err.message });
             }
         }
+
         setIsProcessing(false);
+
+        // Evaluar resultados
+        const failures = results.filter(r => !r.success);
+        const successes = results.filter(r => r.success);
+
+        if (failures.length > 0) {
+            const errorMsg = failures.map(f => `${f.store}: ${f.error}`).join('; ');
+            setOrderError(`Hubo problemas con algunas tiendas: ${errorMsg}`);
+            if (successes.length > 0) {
+                setOrderSuccess({ message: `Se crearon órdenes para: ${successes.map(s => s.store).join(', ')}. Pero fallaron: ${failures.map(f => f.store).join(', ')}.` });
+            }
+        } else {
+            const orderIds = successes.map(s => s.orderId).filter(Boolean).join(', ');
+            setOrderSuccess({
+                message: '¡Todas las órdenes se crearon exitosamente!',
+                orderId: orderIds ? parseInt(orderIds) : undefined
+            });
+        }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans w-full flex flex-col">
+        <div className="payment-method-page">
             <Header />
 
-            <main className="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
-                
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <main className="payment-method-container">
+
+                <div className="payment-layout">
                     {/* Columna de Método de Pago */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <h2 className="text-3xl font-bold text-gray-800 mb-8">
+                    <div className="payment-options-column">
+                        <h2 className="section-title">
                             Elige tu método de pago
                         </h2>
-                        <br></br>
+
                         {/* Indicación de Entrega Seleccionada */}
-                        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 text-sm text-blue-800 rounded-md shadow-sm">
-                            <p className="font-medium">Modo de Entrega Seleccionado:</p>
-                            <p className="pt-1">
-                                {selectedDelivery === 'pickup' 
-                                    ? 'Recoger en tienda (Sin costo de envío).' 
+                        <div className="delivery-info-box">
+                            <p className="delivery-info-label">Modo de Entrega Seleccionado:</p>
+                            <p className="delivery-info-text">
+                                {selectedDelivery === 'pickup'
+                                    ? 'Recoger en tienda (Sin costo de envío).'
                                     : 'Envío a domicilio (Se aplica tarifa de envío).'
                                 }
                             </p>
-                            <button 
-                                onClick={() => navigate(-1)} 
-                                className="text-blue-600 font-semibold hover:text-blue-700 mt-2 text-xs flex items-center transition"
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="btn-change-delivery"
                             >
-                                <Edit size={14} className="mr-1"/> Cambiar opción de entrega
+                                <Edit size={14} className="mr-1" /> Cambiar opción de entrega
                             </button>
                         </div>
-                        <br></br>
+
                         {/* Opciones de Pago */}
-                        <div className="flex flex-col space-y-4">
+                        <div className="payment-options-list">
                             {/* 1. Tarjeta de crédito/débito */}
                             <PaymentOptionCard
                                 id="card"
@@ -439,7 +460,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
                             >
                                 <CardForm />
                             </PaymentOptionCard>
-                            <br></br>
+
                             {/* 2. PSE */}
                             <PaymentOptionCard
                                 id="pse"
@@ -449,7 +470,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
                                 isSelected={selectedPayment === 'pse'}
                                 onSelect={setSelectedPayment}
                             />
-                            <br></br>
+
                             {/* 3. Pago contra entrega */}
                             <PaymentOptionCard
                                 id="cod"
@@ -476,26 +497,24 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
                     </div>
                 </div>
             </main>
-            
+
             {/* Modales de éxito / error */}
             {orderSuccess && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOrderSuccess(null)}></div>
-                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full z-10 p-6 mx-auto transform transition-all">
-                        <div className="flex flex-col items-center">
-                            <div className="p-3 bg-green-100 rounded-full mb-4">
-                                <Lock size={28} className="text-green-600" />
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2 text-center">¡Compra Exitosa!</h3>
-                            <p className="text-sm text-gray-600 mb-6 text-center">
-                                {orderSuccess.message || 'Tu orden se ha creado correctamente. Revisa tu correo electrónico para el resumen.'}
-                            </p>
+                <div className="modal-overlay">
+                    <div className="modal-backdrop" onClick={() => setOrderSuccess(null)}></div>
+                    <div className="modal-content">
+                        <div className="modal-icon-wrapper success">
+                            <Lock size={28} />
                         </div>
-                        
-                        <div className="flex flex-col space-y-3">
+                        <h3 className="modal-title">¡Compra Exitosa!</h3>
+                        <p className="modal-message">
+                            {orderSuccess.message || 'Tu orden se ha creado correctamente. Revisa tu correo electrónico para el resumen.'}
+                        </p>
+
+                        <div className="modal-actions">
                             {orderSuccess.orderId && (
-                                <p className="text-sm font-medium text-gray-700 text-center">
-                                    N° de Orden: <span className="text-green-600 font-bold">{orderSuccess.orderId}</span>
+                                <p className="order-id">
+                                    N° de Orden: <span>{orderSuccess.orderId}</span>
                                 </p>
                             )}
                             <button
@@ -504,7 +523,7 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
                                     if (typeof setCartData === 'function') setCartData([]);
                                     navigate('/');
                                 }}
-                                className="w-full py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition"
+                                className="btn-modal-primary"
                             >
                                 Volver al inicio
                             </button>
@@ -514,29 +533,28 @@ const PaymentMethod: React.FC<PaymentMethodProps> = ({ cartData = [], setCartDat
             )}
 
             {orderError && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOrderError(null)}></div>
-                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full z-10 p-6 mx-auto transform transition-all">
-                        <div className="flex flex-col items-center">
-                            <div className="p-3 bg-red-100 rounded-full mb-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7 text-red-600">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.021 3.376 1.87 3.376H17.48c1.849 0 2.736-1.876 1.87-3.376L12.18 5.75c-.866-1.5-3.033-1.5-3.898 0L2.697 16.126zM12 15.75h.007" />
-                                </svg>
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2 text-center">Error de Pago</h3>
-                            <p className="text-sm text-gray-600 mb-6 text-center">Ocurrió un problema: {orderError}</p>
+                <div className="modal-overlay">
+                    <div className="modal-backdrop" onClick={() => setOrderError(null)}></div>
+                    <div className="modal-content">
+                        <div className="modal-icon-wrapper error">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.021 3.376 1.87 3.376H17.48c1.849 0 2.736-1.876 1.87-3.376L12.18 5.75c-.866-1.5-3.033-1.5-3.898 0L2.697 16.126zM12 15.75h.007" />
+                            </svg>
                         </div>
-                        <div className="flex justify-end space-x-3">
+                        <h3 className="modal-title">Error de Pago</h3>
+                        <p className="modal-message">Ocurrió un problema: {orderError}</p>
+                        <div className="modal-actions-row">
                             <button
                                 onClick={() => setOrderError(null)}
-                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition"
+                                className="btn-modal-secondary"
                                 disabled={isProcessing}
                             >
                                 Cerrar
                             </button>
                             <button
                                 onClick={postOrder}
-                                className={`px-4 py-2 text-white rounded-xl font-medium transition ${isProcessing ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
+                                className="btn-modal-primary"
+                                style={{ width: 'auto', padding: '0.5rem 1rem' }}
                                 disabled={isProcessing}
                             >
                                 {isProcessing ? 'Reintentando...' : 'Intentar de nuevo'}

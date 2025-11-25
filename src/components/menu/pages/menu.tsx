@@ -1,10 +1,10 @@
 import './menu.css';
 import React, { useState, useEffect } from 'react';
-import Cart from './Cart.tsx';
-import Payment from './payment.tsx';
-import PaymentMethod from './paymentMethod.tsx';
+import Cart from './Cart.tsx'
+import Payment from './Payment.tsx';
+import PaymentMethod from './PaymentMethod.tsx';
 import { Routes, Route, Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, MapPin, DollarSign, Leaf, Heart, Check, ChevronDown, ShoppingCart, Menu } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, DollarSign, Leaf, Heart, Check, ChevronDown, ShoppingCart, Menu, X } from 'lucide-react';
 import { Product, CartStore, CartItem } from '../../../types/menu.types';
 import { productService } from '../../../services/productService';
 import { FilterItem } from '../components/MenuComponents';
@@ -87,97 +87,99 @@ const Home: React.FC<HomeProps> = ({ onlyDonations, setOnlyDonations, products, 
   });
 
   return (
-    <main className="menu-page">
+    <div className="min-h-screen bg-gray-50 font-sans w-full">
       <Header />
-      <div className="page-header">
-        <div className="page-title">
-          {searchQuery ? (
-            <h2>Resultados de búsqueda</h2>
-          ) : (
-            <h2>Explorar Productos</h2>
-          )}
-          <p>Productos cerca de ti</p>
-        </div>
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Buscar productos..."
-            className="search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Search size={20} className="search-icon" />
-        </div>
-      </div>
-
-      <div className="menu-layout">
-        <aside className="filters-sidebar">
-          <h3 className="filter-section-title">
-            <SlidersHorizontal size={20} />
-            <span>Filtros</span>
-          </h3>
-
-          <div className="filter-list">
-            <FilterItem title="Categoría" icon={<Leaf />} selected dropdown>
-              <div className="filter-check">
-                <Check size={14} />
-              </div>
-            </FilterItem>
-            <FilterItem title="Precio" icon={<DollarSign />} dropdown />
-            <FilterItem title="Cercanía" icon={<MapPin />} dropdown />
-            <FilterToggle
-              title="Solo donaciones"
-              icon={<Heart />}
-              checked={onlyDonations}
-              onToggle={(e) => setOnlyDonations(e.target.checked)}
-            />
+      <main className="menu-page">
+        <div className="page-header">
+          <div className="page-title">
+            {searchQuery ? (
+              <h2>Resultados de búsqueda</h2>
+            ) : (
+              <h2>Explorar Productos</h2>
+            )}
+            <p>Productos cerca de ti</p>
           </div>
-        </aside>
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              className="search-input"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search size={20} className="search-icon" />
+          </div>
+        </div>
 
-        <section className="products-section">
-          {loading ? (
-            <div className="loading-state">
-              <div className="spinner"></div>
-            </div>
-          ) : error ? (
-            <div className="error-state">
-              <p className="text-red-600 bg-red-50 px-4 py-2 rounded-lg border border-red-200">
-                Error cargando productos: {error}
-              </p>
-            </div>
-          ) : (
-            <>
-              {filteredProducts.length > 0 ? (
-                <>
-                  <div className="products-grid">
-                    {filteredProducts.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        onOpen={() => onProductClick(product)}
-                      />
-                    ))}
-                  </div>
-                  <Pagination />
-                </>
-              ) : (
-                <div className="empty-state-container">
-                  <div className="empty-state-icon-wrapper">
-                    <Search size={48} strokeWidth={1.5} />
-                  </div>
-                  <h3 className="empty-state-title">Aún no hay productos</h3>
-                  <p className="empty-state-text">
-                    {searchQuery
-                      ? `No encontramos productos que coincidan con "${searchQuery}".`
-                      : "No hay productos disponibles en este momento. Intenta ajustar tus filtros o vuelve más tarde."}
-                  </p>
+        <div className="menu-layout">
+          <aside className="filters-sidebar">
+            <h3 className="filter-section-title">
+              <SlidersHorizontal size={20} />
+              <span>Filtros</span>
+            </h3>
+
+            <div className="filter-list">
+              <FilterItem title="Categoría" icon={<Leaf />} selected dropdown>
+                <div className="filter-check">
+                  <Check size={14} />
                 </div>
-              )}
-            </>
-          )}
-        </section>
-      </div>
-    </main>
+              </FilterItem>
+              <FilterItem title="Precio" icon={<DollarSign />} dropdown />
+              <FilterItem title="Cercanía" icon={<MapPin />} dropdown />
+              <FilterToggle
+                title="Solo donaciones"
+                icon={<Heart />}
+                checked={onlyDonations}
+                onToggle={(e) => setOnlyDonations(e.target.checked)}
+              />
+            </div>
+          </aside>
+
+          <section className="products-section">
+            {loading ? (
+              <div className="loading-state">
+                <div className="spinner"></div>
+              </div>
+            ) : error ? (
+              <div className="error-state">
+                <p className="text-red-600 bg-red-50 px-4 py-2 rounded-lg border border-red-200">
+                  Error cargando productos: {error}
+                </p>
+              </div>
+            ) : (
+              <>
+                {filteredProducts.length > 0 ? (
+                  <>
+                    <div className="products-grid">
+                      {filteredProducts.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          onOpen={() => onProductClick(product)}
+                        />
+                      ))}
+                    </div>
+                    <Pagination />
+                  </>
+                ) : (
+                  <div className="empty-state-container">
+                    <div className="empty-state-icon-wrapper">
+                      <Search size={48} strokeWidth={1.5} />
+                    </div>
+                    <h3 className="empty-state-title">Aún no hay productos</h3>
+                    <p className="empty-state-text">
+                      {searchQuery
+                        ? `No encontramos productos que coincidan con "${searchQuery}".`
+                        : "No hay productos disponibles en este momento. Intenta ajustar tus filtros o vuelve más tarde."}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+        </div>
+      </main>
+    </div>
   );
 };
 
@@ -197,7 +199,7 @@ const App: React.FC = () => {
 
       let store: CartStore | undefined = next.find(s => s.store === storeName);
       if (!store) {
-        store = { id: Date.now(), store: storeName, items: [] };
+        store = { id: product.storeId || Date.now(), store: storeName, items: [] };
         next.push(store);
       }
 
@@ -283,71 +285,74 @@ const App: React.FC = () => {
       </Routes>
 
       {selectedProduct && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden transform transition-all scale-100">
-            <div className="relative h-64">
-              <img
-                src={selectedProduct.imageUrl}
-                alt={selectedProduct.name}
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="absolute top-4 right-4 bg-white/90 p-2 rounded-full hover:bg-white transition-colors shadow-sm"
-              >
-                ✕
-              </button>
-            </div>
+        <div className="modal-overlay">
+          <div className="modal-container">
+            <button
+              onClick={() => setSelectedProduct(null)}
+              className="modal-close"
+            >
+              <X size={20} />
+            </button>
 
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">{selectedProduct.name}</h3>
-                  <p className="text-gray-500 flex items-center gap-1 mt-1">
-                    <MapPin size={16} />
-                    {selectedProduct.location}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-green-600">${selectedProduct.price}</p>
-                  {selectedProduct.originalPrice && (
-                    <p className="text-sm text-gray-400 line-through">${selectedProduct.originalPrice}</p>
-                  )}
-                </div>
+            <div className="modal-body">
+              <div className="modal-image-section">
+                <img
+                  src={selectedProduct.imageUrl}
+                  alt={selectedProduct.name}
+                  className="modal-image"
+                />
               </div>
 
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                {selectedProduct.descripcion || 'Sin descripción disponible.'}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <span className="text-gray-500 block">Stock disponible</span>
-                  <span className="font-semibold text-gray-900">
-                    {typeof selectedProduct.stock !== 'undefined' && selectedProduct.stock !== null ? selectedProduct.stock : '—'} unidades
-                  </span>
+              <div className="modal-info-section">
+                <div className="modal-header">
+                  <div>
+                    <h3 className="modal-title">{selectedProduct.name}</h3>
+                    <p className="modal-location">
+                      <MapPin size={16} />
+                      {selectedProduct.location}
+                    </p>
+                  </div>
+                  <div className="modal-price-block">
+                    <p className="modal-price">${selectedProduct.price}</p>
+                    {selectedProduct.originalPrice && (
+                      <p className="modal-original-price">${selectedProduct.originalPrice}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <span className="text-gray-500 block">Fecha de vencimiento</span>
-                  <span className="font-semibold text-gray-900">
-                    {selectedProduct.fecha_vencimiento || '—'}
-                  </span>
-                </div>
-              </div>
 
-              <div className="flex gap-3 pt-4 border-t border-gray-100">
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={() => { addToCart(selectedProduct, 1); setSelectedProduct(null); }}
-                  className="flex-1 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium shadow-lg shadow-green-200 transition-all transform active:scale-[0.98]"
-                >
-                  Agregar al carrito
-                </button>
+                <p className="modal-description">
+                  {selectedProduct.descripcion || 'Sin descripción disponible.'}
+                </p>
+
+                <div className="modal-meta-grid">
+                  <div className="modal-meta-item">
+                    <span className="modal-meta-label">Stock disponible</span>
+                    <span className="modal-meta-value">
+                      {typeof selectedProduct.stock !== 'undefined' && selectedProduct.stock !== null ? selectedProduct.stock : '—'} unidades
+                    </span>
+                  </div>
+                  <div className="modal-meta-item">
+                    <span className="modal-meta-label">Fecha de vencimiento</span>
+                    <span className="modal-meta-value">
+                      {selectedProduct.fecha_vencimiento ? new Date(selectedProduct.fecha_vencimiento).toLocaleDateString() : '—'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="modal-actions">
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className="btn-modal-cancel"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => { addToCart(selectedProduct, 1); setSelectedProduct(null); }}
+                    className="btn-modal-add"
+                  >
+                    Agregar al carrito
+                  </button>
+                </div>
               </div>
             </div>
           </div>

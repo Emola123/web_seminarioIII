@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import './InventoryManagement.css';
+import { Header } from '../common/Header';
+import '../menu/pages/menu.css';
 
 interface InventoryItem {
   name: string;
@@ -51,7 +52,7 @@ const INVENTORY_DATA: InventoryItem[] = [
 ];
 
 const statusClass = (status: InventoryItem['status']) =>
-  status === 'Activo' ? 'inventory-badge success' : 'inventory-badge warning';
+  status === 'Activo' ? 'status-badge success' : 'status-badge warning';
 
 const InventoryManagement: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -69,32 +70,40 @@ const InventoryManagement: React.FC = () => {
   }, [search, statusFilter]);
 
   return (
-    <div className="inventory-page">
-      <header className="inventory-header">
-        <div className="inventory-brand">Expirapp</div>
-        <button className="inventory-add">Añadir Nuevo Producto</button>
-      </header>
+    <div className="min-h-screen bg-gray-50 font-sans w-full">
+      <Header />
 
-      <main className="inventory-content">
-        <div className="inventory-title-row">
-          <h1 className="inventory-title">Gestión de Inventario</h1>
-          <div className="inventory-filters">
-            <div className="inventory-search">
-              <input
-                type="search"
-                placeholder="Buscar por nombre o SKU..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-            <select className="inventory-select" aria-label="Fecha de caducidad">
+      <main className="inventory-container">
+        <div className="page-header">
+          <div className="page-title">
+            <h2>Gestión de Inventario</h2>
+            <p>Administra tus productos y stock</p>
+          </div>
+
+          <div className="inventory-actions-header">
+            <button className="btn-primary">Añadir Nuevo Producto</button>
+          </div>
+        </div>
+
+        <div className="inventory-controls">
+          <div className="search-container">
+            <input
+              type="search"
+              className="search-input"
+              placeholder="Buscar por nombre o SKU..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="filters-row">
+            <select className="filter-select" aria-label="Fecha de caducidad">
               <option>Fecha de caducidad</option>
             </select>
-            <select className="inventory-select" aria-label="Categoría">
+            <select className="filter-select" aria-label="Categoría">
               <option>Categoría</option>
             </select>
             <select
-              className="inventory-select"
+              className="filter-select"
               aria-label="Estado"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as 'Todos' | InventoryItem['status'])}
@@ -106,7 +115,7 @@ const InventoryManagement: React.FC = () => {
           </div>
         </div>
 
-        <section className="inventory-table" aria-label="Tabla de inventario">
+        <section className="inventory-table-wrapper" aria-label="Tabla de inventario">
           <div className="inventory-table-header">
             <span>Producto</span>
             <span>SKU</span>
@@ -118,26 +127,28 @@ const InventoryManagement: React.FC = () => {
             <span>Acciones</span>
           </div>
 
-          {filteredItems.map((item) => (
-            <div className="inventory-row" key={item.sku}>
-              <span className="inventory-product">{item.name}</span>
-              <span>{item.sku}</span>
-              <span className="inventory-expiration">{item.expiration}</span>
-              <span>{item.price.toFixed(2)}€</span>
-              <span className="inventory-offer">{item.offerPrice.toFixed(2)}€</span>
-              <span>{item.stock}</span>
-              <span className={statusClass(item.status)}>{item.status}</span>
-              <span className="inventory-actions">
-                <button className="inventory-action">✏️</button>
-                <button className="inventory-action">🗑️</button>
-              </span>
-            </div>
-          ))}
+          <div className="inventory-table-body">
+            {filteredItems.map((item) => (
+              <div className="inventory-row" key={item.sku}>
+                <span className="inventory-product-name">{item.name}</span>
+                <span className="inventory-sku">{item.sku}</span>
+                <span className="inventory-date">{item.expiration}</span>
+                <span className="inventory-price">{item.price.toFixed(2)}€</span>
+                <span className="inventory-offer-price">{item.offerPrice.toFixed(2)}€</span>
+                <span className="inventory-stock">{item.stock}</span>
+                <span className="inventory-status"><span className={statusClass(item.status)}>{item.status}</span></span>
+                <span className="inventory-actions">
+                  <button className="action-btn edit" title="Editar">✏️</button>
+                  <button className="action-btn delete" title="Eliminar">🗑️</button>
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
 
-        <div className="inventory-pagination" aria-label="Paginación de inventario">
+        <div className="pagination" aria-label="Paginación de inventario">
           {[1, 2, 3].map((page) => (
-            <button key={page} className={`inventory-page-btn ${page === 1 ? 'active' : ''}`}>
+            <button key={page} className={`pagination-button ${page === 1 ? 'active' : ''}`}>
               {page}
             </button>
           ))}

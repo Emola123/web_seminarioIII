@@ -4,6 +4,7 @@ import { Trash2, Minus, Plus } from 'lucide-react';
 import { CartItem as CartItemType, CartStore } from '../../../types/menu.types';
 import { Header } from '../../common/Header';
 import './menu.css';
+import './Cart.css';
 
 // --- Interfaces de Tipado ---
 
@@ -128,11 +129,17 @@ const CartItem: React.FC<CartItemProps> = ({ item, updateQuantity, removeItem })
         {/* Detalles del Producto */}
         <div className="cart-item-details">
             <h4 className="cart-item-title">{item.name}</h4>
-            <p className="cart-item-subtitle">
-                Marca: {item.brand}, Tamaño: {item.size}
-            </p>
+
+            {(item.brand || item.size) && (
+                <p className="cart-item-subtitle">
+                    {item.brand && <span>Marca: {item.brand}</span>}
+                    {item.brand && item.size && <span> • </span>}
+                    {item.size && <span>Tamaño: {item.size}</span>}
+                </p>
+            )}
+
             <p className="cart-item-expiry">
-                Vence el {item.expiryDate}
+                Vence el {new Date(item.expiryDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
             <p className="cart-item-price">
                 <span className="price-old">Antes: ${item.originalPrice.toFixed(2)}</span>
@@ -289,7 +296,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
     if (cartData.length === 0) {
         return (
             <div className="cart-page">
-                <Header variant="simple" />
+                <Header />
                 <main className="cart-main empty">
                     <div className="empty-cart-card">
                         <Trash2 size={48} className="empty-cart-icon" />
@@ -310,7 +317,7 @@ const Cart: React.FC<AppProps> = ({ cartData: externalCartData, setCartData: ext
 
     return (
         <div className="cart-page">
-            <Header variant="simple" />
+            <Header />
             <main className="cart-main">
                 {/* Título y CTA */}
                 <div className="cart-header">

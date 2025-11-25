@@ -1,0 +1,211 @@
+/* Payment Page Styles */
+.payment-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+}
+
+.payment-header {
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.header-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-logo-link {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #16a34a;
+    text-decoration: none;
+    letter-spacing: -0.025em;
+}
+
+.payment-container {
+    flex: 1;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-title {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #111827;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.025em;
+}
+
+.payment-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Delivery Option Card */
+.delivery-option-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.delivery-option-card:hover:not(.disabled) {
+    border-color: #86efac;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.delivery-option-card.selected {
+    border-color: #16a34a;
+    background-color: #f0fdf4;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+}
+
+.delivery-option-card.disabled {
+    background-color: #f9fafb;
+    border-color: #f3f4f6;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.option-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.option-icon-wrapper {
+    padding: 0.75rem;
+    border-radius: 50%;
+    background-color: #dcfce7;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.delivery-option-card.disabled .option-icon-wrapper {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+}
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.option-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.delivery-option-card.disabled .option-title {
+    color: #9ca3af;
+}
+
+.option-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.delivery-option-card.disabled .option-description {
+    color: #9ca3af;
+}
+
+.option-radio {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 1rem;
+    background-color: white;
+}
+
+.delivery-option-card.selected .option-radio {
+    border-color: #16a34a;
+}
+
+.radio-inner {
+    width: 0.625rem;
+    height: 0.625rem;
+    background-color: #16a34a;
+    border-radius: 50%;
+}
+
+/* Actions */
+.payment-actions {
+    margin-top: 2.5rem;
+}
+
+.btn-continue {
+    width: 100%;
+    padding: 1rem;
+    background-color: #16a34a;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.3);
+}
+
+.btn-continue:hover:not(:disabled) {
+    background-color: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px -1px rgba(22, 163, 74, 0.4);
+}
+
+.btn-continue:disabled {
+    background-color: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.spacer {
+    height: 4rem;
+}
+
+/* Utility for screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

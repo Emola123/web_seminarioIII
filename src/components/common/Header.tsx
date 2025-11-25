@@ -98,10 +98,10 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
               >
                 Perfil
               </button>
-              <button onClick={() => handleNavigation('orders')} className="header-nav-link">
-                Pedidos
-              </button>
-              <button onClick={() => handleNavigation('inventory')} className="header-nav-link">
+              <button
+                onClick={() => handleNavigation('inventory')}
+                className={`header-nav-link ${isActive('/inventory') ? 'active' : ''}`}
+              >
                 Inventario
               </button>
             </>

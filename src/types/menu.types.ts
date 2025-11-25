@@ -4,8 +4,8 @@ export interface Product {
   id: number | string;
   name: string;
   price: number;
-  originalPrice?: number; 
-  badge?: 'Oferta' | 'Donación' | string; 
+  originalPrice?: number;
+  badge?: 'Oferta' | 'Donación' | string;
   imageUrl: string;
   location?: string;
   distance?: string;
@@ -15,6 +15,7 @@ export interface Product {
   stock?: number | null;
   brand?: string;
   size?: string;
+  storeId?: number;
 }
 // Lo que devuelve el backend
 export interface ApiProduct {
@@ -26,6 +27,8 @@ export interface ApiProduct {
   fecha_vencimiento: string;
   stock: number;
   estado: string;
+  nombre_tienda?: string;
+  id_tienda?: number;
 }
 
 export interface ProductsApiResponse {
@@ -36,7 +39,7 @@ export interface ProductsApiResponse {
 }
 
 export interface CartItem {
-  itemId: string; 
+  itemId: string;
   name: string;
   brand: string;
   size: string;

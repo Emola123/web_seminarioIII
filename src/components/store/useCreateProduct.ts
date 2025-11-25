@@ -25,11 +25,37 @@ export const useCreateProduct = () => {
   const [user, setUser] = useState<{ name: string; photo?: string } | null>(null);
 
   useEffect(() => {
-    const usuarioString = localStorage.getItem('usuario');
-    if (usuarioString) {
-      const usuario = JSON.parse(usuarioString);
-      setUser({ name: usuario.nombre || 'Usuario', photo: usuario.foto });
-    }
+    const fetchStoreData = async () => {
+      const usuarioString = localStorage.getItem('usuario');
+      if (usuarioString) {
+        const usuario = JSON.parse(usuarioString);
+        setUser({ name: usuario.nombre || 'Usuario', photo: usuario.foto });
+
+        // Si no tenemos el ID de la tienda en el usuario, intentamos buscarlo
+        if (!usuario.id_tienda && !usuario.store_id) {
+          try {
+            const response = await fetch(`http://localhost:8081/api/v1/stores/${usuario.id_usuario || usuario.id}`, {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
+            });
+            if (response.ok) {
+              const data = await response.json();
+              if (data.data && data.data.id_tienda) {
+                // Actualizamos el usuario en localStorage con el ID de la tienda
+                const updatedUser = { ...usuario, id_tienda: data.data.id_tienda };
+                localStorage.setItem('usuario', JSON.stringify(updatedUser));
+                setUser({ name: updatedUser.nombre || 'Usuario', photo: updatedUser.foto });
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching store data:', error);
+          }
+        }
+      }
+    };
+
+    fetchStoreData();
   }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,24 +87,37 @@ export const useCreateProduct = () => {
         setIsLoading(false);
         return;
       }
-      
-      const payload = {
-        nombre: productData.nombre,
-        descripcion: productData.descripcion || undefined,
-        precio: parseFloat(productData.precio),
-        fecha_vencimiento: productData.fechaVencimiento,
-        stock: productData.stock ? parseInt(productData.stock) : undefined,
-        estado: productData.estado,
-        id_tienda: usuario.id_tienda,
-      };
+
+      // Resolver ID de la tienda
+      const storeId = usuario.id_tienda || usuario.store_id || (usuario.tienda && usuario.tienda.id_tienda);
+
+      if (!storeId) {
+        alert('Error: No se pudo identificar la tienda. Por favor, recarga la página o vuelve a iniciar sesión. Debug: ' + JSON.stringify(usuario));
+        setIsLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('nombre', productData.nombre);
+      if (productData.descripcion) formData.append('descripcion', productData.descripcion);
+      formData.append('precio', productData.precio);
+      formData.append('fecha_vencimiento', productData.fechaVencimiento);
+      if (productData.stock) formData.append('stock', productData.stock);
+      formData.append('estado', productData.estado);
+      formData.append('id_tienda', storeId.toString());
+
+      // Adjuntar imagen (solo la primera, según el requerimiento 'imagen')
+      if (images.length > 0) {
+        formData.append('imagen', images[0]);
+      }
 
       const response = await fetch('http://localhost:8081/api/v1/products/', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
+          // Content-Type se establece automáticamente para FormData
         },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (response.ok) {

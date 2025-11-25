@@ -1,192 +1,228 @@
+/* Layout */
 .order-page {
-  min-height: 100vh;
-  background: #f3f7f1;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1f2a37;
-}
-
-.order-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 32px;
-  background: #0f172a;
-  color: #f8fafc;
-}
-
-.order-brand {
-  font-weight: 700;
-  font-size: 20px;
-}
-
-.order-logout {
-  background: #16a34a;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
-  box-shadow: 0 10px 30px rgba(22, 163, 74, 0.35);
-}
-
-.order-logout:hover {
-  transform: translateY(-1px);
-}
-
-.order-content {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px 56px;
+  padding: 2rem;
 }
 
-.order-title-row {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
+/* Page Header - reusing styles concept from menu.css */
+.page-header {
+  margin-bottom: 2rem;
 }
 
-.order-title {
-  font-size: 32px;
-  font-weight: 800;
+.page-title h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
   margin: 0;
 }
 
+.page-title p {
+  color: #6b7280;
+  margin: 0.25rem 0 0 0;
+}
+
+/* Tabs */
 .order-tabs {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  background: #e2e8f0;
-  border-radius: 14px;
-  padding: 6px;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .order-tab {
-  border: none;
   background: transparent;
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-weight: 600;
-  color: #475569;
+  border: none;
+  padding: 0.75rem 0;
+  margin-bottom: -1px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6b7280;
   cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.order-tab:hover {
+  color: #111827;
 }
 
 .order-tab.active {
-  background: #16a34a;
-  color: #fff;
-  box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25);
+  color: #16a34a;
+  border-bottom-color: #16a34a;
+  font-weight: 600;
 }
 
+/* Order List */
 .order-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 12px;
+  gap: 1rem;
 }
 
 .order-card {
-  background: #fff;
+  background: white;
   border-radius: 16px;
-  padding: 18px 20px;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.order-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 .order-card-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.order-info {
+  flex: 1;
 }
 
 .order-number {
+  font-size: 1.125rem;
   font-weight: 700;
-  margin: 0;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
 }
 
 .order-meta {
-  margin: 4px 0;
-  color: #475569;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0 0 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .order-store {
+  color: #4b5563;
+  font-weight: 500;
+  font-size: 0.95rem;
   margin: 0;
-  color: #94a3b8;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.order-price-block {
+/* Price & Actions */
+.order-actions-block {
   display: flex;
+  flex-direction: column;
   align-items: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.order-status-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .order-price {
-  font-size: 20px;
-  font-weight: 800;
-  color: #0ea5e9;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
   margin: 0;
 }
 
 .order-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 13px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
-.order-badge.warning { background: #fef9c3; color: #d97706; }
-.order-badge.info { background: #e0f2fe; color: #0284c7; }
-.order-badge.success { background: #dcfce7; color: #16a34a; }
+.order-badge.warning {
+  background-color: #fef9c3;
+  color: #b45309;
+}
 
-.order-details {
-  border: none;
-  background: transparent;
+.order-badge.info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.order-badge.success {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.btn-details {
+  background-color: white;
   color: #16a34a;
-  font-weight: 700;
+  border: 1px solid #16a34a;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.btn-details:hover {
+  background-color: #f0fdf4;
+}
+
+/* Pagination */
 .order-pagination {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-top: 28px;
+  gap: 0.5rem;
+  margin-top: 3rem;
 }
 
 .order-page-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #1f2937;
-  font-weight: 700;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #4b5563;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.order-page-btn:hover {
+  border-color: #d1d5db;
+  color: #111827;
 }
 
 .order-page-btn.active {
-  background: #16a34a;
-  color: #fff;
+  background-color: #16a34a;
+  color: white;
   border-color: #16a34a;
-  box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 640px) {
   .order-card-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .order-price-block {
+  .order-actions-block {
     width: 100%;
+    flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
   }
 }

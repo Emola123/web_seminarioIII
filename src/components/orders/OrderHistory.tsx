@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from 'react';
+import { Clock, MapPin } from 'lucide-react';
+import { Header } from '../common/Header';
 import './OrderHistory.css';
 
 interface OrderInfo {
@@ -66,47 +68,55 @@ const OrderHistory: React.FC = () => {
   }, [filter]);
 
   return (
-    <div className="order-page">
-      <header className="order-header">
-        <div className="order-brand">Expirapp</div>
-        <button className="order-logout">Cerrar sesión</button>
-      </header>
+    <div className="min-h-screen bg-gray-50 font-sans w-full">
+      <Header />
 
-      <main className="order-content">
-        <div className="order-title-row">
-          <div>
-            <h1 className="order-title">Historial de Pedidos</h1>
+      <main className="order-page">
+        <div className="page-header">
+          <div className="page-title">
+            <h2>Historial de Pedidos</h2>
+            <p>Revisa el estado de tus compras recientes</p>
           </div>
-          <div className="order-tabs" role="tablist">
-            {STATUS_FILTERS.map((status) => (
-              <button
-                key={status}
-                className={`order-tab ${filter === status ? 'active' : ''}`}
-                onClick={() => setFilter(status)}
-                role="tab"
-                aria-pressed={filter === status}
-              >
-                {status}
-              </button>
-            ))}
-          </div>
+        </div>
+
+        <div className="order-tabs" role="tablist">
+          {STATUS_FILTERS.map((status) => (
+            <button
+              key={status}
+              className={`order-tab ${filter === status ? 'active' : ''}`}
+              onClick={() => setFilter(status)}
+              role="tab"
+              aria-pressed={filter === status}
+            >
+              {status}
+            </button>
+          ))}
         </div>
 
         <section className="order-list">
           {filteredOrders.map((order) => (
             <article key={order.id} className="order-card">
               <div className="order-card-header">
-                <div>
+                <div className="order-info">
                   <p className="order-number">Pedido {order.id}</p>
-                  <p className="order-meta">
-                    {order.date}, {order.time}
-                  </p>
-                  <p className="order-store">{order.store}</p>
+                  <div className="order-meta">
+                    <Clock size={16} />
+                    <span>{order.date}, {order.time}</span>
+                  </div>
+                  <div className="order-store">
+                    <MapPin size={16} />
+                    <span>{order.store}</span>
+                  </div>
                 </div>
-                <div className="order-price-block">
-                  <span className={statusBadgeClass(order.status)}>{statusLabel(order.status)}</span>
-                  <p className="order-price">${order.total.toFixed(2)}</p>
-                  <button className="order-details">Ver Detalles</button>
+
+                <div className="order-actions-block">
+                  <div className="order-status-row">
+                    <span className={statusBadgeClass(order.status)}>{statusLabel(order.status)}</span>
+                    <p className="order-price">${order.total.toFixed(2)}</p>
+                  </div>
+                  <button className="btn-details">
+                    Ver Detalles
+                  </button>
                 </div>
               </div>
             </article>
