@@ -183,13 +183,6 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
                   >
                     Inventario
                   </button> 
-
-                  <button
-                    onClick={() => handleNavigation('publicar')}
-                    className={`header-nav-link ${isActive('/publicar') ? 'active' : ''}`}
-                  >
-                    Publicar
-                  </button>
                 </>
               )}
 
