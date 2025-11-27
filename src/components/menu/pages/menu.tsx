@@ -289,6 +289,7 @@ const App: React.FC = () => {
         {/* Orders & Inventory */}
         <Route path="/orders" element={<OrderHistory />} />
         <Route path="/inventory" element={<InventoryManagement />} />
+        <Route path="/publicar" element={<FormPublication />} />
       </Routes>
 
       {selectedProduct && (
