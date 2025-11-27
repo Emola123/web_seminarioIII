@@ -26,18 +26,88 @@ export const Login: React.FC = () => {
     setErrorMessage('');
 
     try {
+      console.log('🔐 Iniciando login...');
       const { role } = await authService.login(data);
+      
+      console.log('✅ Login exitoso, rol:', role);
+      
+      // Obtener datos completos del usuario
+      const token = localStorage.getItem('token');
+      const usuarioBase = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const userId = usuarioBase.id_usuario;
+      
+      console.log('👤 User ID:', userId);
+      console.log('🎭 Rol detectado:', role);
+      
+      // Si es tienda/vendedor, obtener el id_tienda
+      if (role === 'tienda' || role === 'vendedor') {
+        console.log('🏪 Usuario es tienda, obteniendo id_tienda...');
+        
+        try {
+          // Usamos ruta relativa para que el proxy de Vite maneje CORS
+          const storesResponse = await fetch('/api/v1/stores', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (storesResponse.ok) {
+            const storesData = await storesResponse.json();
+            console.log('📦 Tiendas obtenidas:', storesData);
+            
+            const tiendas = storesData.tiendas || [];
+            const miTienda = tiendas.find((t: any) => 
+              t.usuario?.id_usuario === userId || 
+              t.id_usuario === userId
+            );
+            
+            if (miTienda) {
+              console.log('✅ Tienda encontrada:', miTienda);
+              
+              // Actualizar localStorage con datos completos de la tienda
+              const usuarioCompleto = {
+                ...usuarioBase,
+                id_tienda: miTienda.id_tienda,
+                area_responsable: miTienda.area_responsable,
+                direccion: miTienda.direccion,
+                telefono: miTienda.telefono,
+                rol: role
+              };
+              
+              console.log('💾 Guardando usuario completo:', usuarioCompleto);
+              localStorage.setItem('usuario', JSON.stringify(usuarioCompleto));
+            } else {
+              console.warn('⚠️ No se encontró tienda para este usuario');
+            }
+          } else {
+            console.error('❌ Error al obtener tiendas:', storesResponse.status);
+          }
+        } catch (err) {
+          console.error('❌ Error al buscar tienda:', err);
+        }
+      } else {
+        console.log('👤 Usuario es comprador, no se necesita id_tienda');
+        // Para compradores, asegurar que el rol esté guardado
+        const usuarioCompleto = {
+          ...usuarioBase,
+          rol: role
+        };
+        localStorage.setItem('usuario', JSON.stringify(usuarioCompleto));
+      }
       
       // Simular un pequeño delay para mejor UX
       setTimeout(() => {
         setIsLoading(false);
-        // Todos los usuarios van al home después de iniciar sesión
+        console.log('🎯 Redirigiendo al home...');
         navigate('/');
       }, 1000);
 
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Error al iniciar sesión');
       setIsLoading(false);
+      console.error('❌ Error en login:', error);
     }
   };
 

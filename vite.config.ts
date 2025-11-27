@@ -13,10 +13,12 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
+      // Todas las llamadas que empiecen con /api se redirigen al backend
       '/api': {
         target: 'http://localhost:8081',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'), 
       },
     },
   },

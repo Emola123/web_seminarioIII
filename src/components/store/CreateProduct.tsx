@@ -19,6 +19,24 @@ export const CreateProduct: React.FC = () => {
     handleLogout
   } = useCreateProduct();
 
+  // Manejador para el stock (solo valores >= 0)
+  const handleStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Permitir campo vacío o solo números no negativos
+    if (value === '' || parseFloat(value) >= 0) {
+      setProductData({ ...productData, stock: value });
+    }
+  };
+
+  // Manejador para el precio (solo valores >= 0)
+  const handlePrecioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Permitir campo vacío o solo números no negativos
+    if (value === '' || parseFloat(value) >= 0) {
+      setProductData({ ...productData, precio: value });
+    }
+  };
+
   return (
     <div className="create-product-container">
       {/* Header */}
@@ -80,8 +98,10 @@ export const CreateProduct: React.FC = () => {
                     type="number"
                     placeholder="Unidades disponibles"
                     value={productData.stock}
-                    onChange={(e) => setProductData({ ...productData, stock: e.target.value })}
+                    onChange={handleStockChange}
                     className="form-input"
+                    min="0"
+                    step="1"
                   />
                 </div>
                 
@@ -92,8 +112,10 @@ export const CreateProduct: React.FC = () => {
                     type="number"
                     placeholder="$0.00"
                     value={productData.precio}
-                    onChange={(e) => setProductData({ ...productData, precio: e.target.value })}
+                    onChange={handlePrecioChange}
                     className="form-input"
+                    min="0"
+                    step="0.01"
                   />
                 </div>
               </div>

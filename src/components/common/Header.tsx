@@ -6,23 +6,46 @@ import './Header.css';
 
 interface HeaderProps {
   variant?: 'default' | 'simple' | string;
-  user?: { name: string; photo?: string; role?: string } | null;
+  user?: { name: string; photo?: string; role?: string; storeId?: number; id_usuario?: number } | null;
   onLogout?: () => void;
   onProfileClick?: () => void;
   onNavigate?: (view: string) => void;
+}
+
+// 🔎 Función auxiliar para buscar tienda por usuario
+async function fetchStoreIdByUserId(userId: number): Promise<number | null> {
+  try {
+    // Usamos ruta relativa para que el proxy de Vite la redirija
+    const response = await fetch('/api/v1/stores');
+    const result = await response.json();
+    const tiendas = result.tiendas || [];
+
+    const tienda = tiendas.find((t: any) => t.usuario?.id_usuario === userId);
+    return tienda?.id_tienda ?? null;
+  } catch (error) {
+    console.error("Error al buscar tienda por usuario:", error);
+    return null;
+  }
 }
 
 export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLogout, onProfileClick, onNavigate }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [localUser, setLocalUser] = useState<{ name: string; photo?: string; role?: string } | null>(() => {
-    // Inicialización síncrona para evitar parpadeos y asegurar que el rol esté disponible inmediatamente
+  const [localUser, setLocalUser] = useState<{
+    name: string;
+    photo?: string;
+    role?: string;
+    storeId?: number;
+    id_usuario?: number;
+  } | null>(() => {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
       try {
         const u = JSON.parse(usuarioString);
         let role = u.rol || u.role;
+        let storeId = u.id_tienda || u.storeId;
+        let id_usuario = u.id_usuario;
 
         if (!role) {
           const token = localStorage.getItem('token');
@@ -30,6 +53,12 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
             try {
               const decoded: any = jwtDecode(token);
               role = decoded.role;
+              if (!storeId) {
+                storeId = decoded.storeId || decoded.id_tienda;
+              }
+              if (!id_usuario) {
+                id_usuario = decoded.id_usuario || decoded.userId;
+              }
             } catch (e) {
               console.error("Error decoding token during init", e);
             }
@@ -40,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
           role = role.toLowerCase().trim();
         }
 
-        return { name: u.nombre, photo: u.foto, role };
+        return { name: u.nombre, photo: u.foto, role, storeId, id_usuario };
       } catch (e) {
         console.error("Error parsing user from localStorage during init", e);
         return null;
@@ -49,31 +78,30 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
     return null;
   });
 
-  // Efecto para sincronizar si cambia el prop user (aunque la inicialización ya cubrió el caso base)
+  // 🔄 Si es vendedor y no tiene storeId, buscarlo en /stores
   useEffect(() => {
-    if (!user && !localUser) {
-      // Re-intentar leer si por alguna razón no se leyó al inicio y no hay user prop
-      const usuarioString = localStorage.getItem('usuario');
-      if (usuarioString) {
-        // Lógica similar a la inicialización, útil si el localStorage cambia externamente (poco probable en este flujo)
-        // Por simplicidad, confiamos en la inicialización, pero mantenemos esto para actualizaciones posteriores si fuera necesario
-      }
+    if (localUser?.role === 'vendedor' && !localUser.storeId && localUser.id_usuario) {
+      fetchStoreIdByUserId(localUser.id_usuario).then((storeId) => {
+        if (storeId) {
+          setLocalUser((prev) => prev ? { ...prev, storeId } : prev);
+          localStorage.setItem('storeId', storeId.toString());
+        }
+      });
     }
-  }, [user]);
+  }, [localUser]);
 
   const activeUser = React.useMemo(() => {
     if (user) {
-      // Si se pasa un usuario pero sin rol (ej. desde Profile), intentamos usar el rol detectado localmente
       if (!user.role && localUser?.role) {
-        return { ...user, role: localUser.role };
+        return { ...user, role: localUser.role, storeId: localUser.storeId, id_usuario: localUser.id_usuario };
       }
       return user;
     }
     return localUser;
   }, [user, localUser]);
 
-  const isSeller = activeUser?.role === 'vendedor';
-  const isBuyer = activeUser?.role === 'comprador';
+  const isSeller = activeUser?.role === 'vendedor' || activeUser?.role === 'tienda';
+  const isBuyer = activeUser?.role === 'comprador' || activeUser?.role === 'cliente';
 
   const handleLogoutInternal = () => {
     if (onLogout) {
@@ -81,6 +109,7 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
     } else {
       localStorage.removeItem('token');
       localStorage.removeItem('usuario');
+      localStorage.removeItem('storeId');
       setLocalUser(null);
       navigate('/login');
     }
@@ -92,7 +121,13 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
     } else {
       if (view === 'home') navigate('/');
       if (view === 'products') navigate('/');
-      if (view === 'profile') navigate(isSeller ? '/store-profile' : '/profile');
+      if (view === 'profile') {
+        if (isSeller) {
+          navigate(`/store-profile/${activeUser?.storeId ?? ''}`);
+        } else {
+          navigate('/profile');
+        }
+      }
       if (view === 'orders') navigate('/orders');
       if (view === 'inventory') navigate('/inventory');
     }
@@ -115,7 +150,6 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
         <nav className="header-nav lg:flex hidden">
           {activeUser && (
             <>
-              {/* Inicio - Común para todos */}
               <button
                 onClick={() => navigate('/')}
                 className={`header-nav-link ${isActive('/') ? 'active' : ''}`}
@@ -123,7 +157,6 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
                 Inicio
               </button>
 
-              {/* Enlaces para Comprador */}
               {isBuyer && (
                 <>
                   <button
@@ -141,7 +174,6 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
                 </>
               )}
 
-              {/* Enlaces para Vendedor */}
               {isSeller && (
                 <button
                   onClick={() => handleNavigation('inventory')}
@@ -151,10 +183,9 @@ export const Header: React.FC<HeaderProps> = ({ variant = 'default', user, onLog
                 </button>
               )}
 
-              {/* Perfil - Común pero con destino diferente */}
               <button
-                onClick={() => handleNavigation('profile')}
-                className={`header-nav-link ${isActive(isSeller ? '/store-profile' : '/profile') ? 'active' : ''}`}
+                onClick={() => navigate('/store-profile')}
+                className={`header-nav-link ${isActive('/store-profile') ? 'active' : ''}`}
               >
                 Perfil
               </button>

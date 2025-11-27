@@ -20,7 +20,7 @@ import { StoreRegistration } from '../../store/StoreRegistration';
 import { CreateProduct } from '../../store/CreateProduct';
 import { useNavigate } from 'react-router-dom';
 import OrderHistory from '../../orders/OrderHistory';
-import InventoryManagement from '../../inventory/InventoryManagement'
+import InventoryManagement from '../../inventory/InventoryManagement';
 
 interface HomeProps {
   onlyDonations: boolean;
@@ -279,6 +279,7 @@ const App: React.FC = () => {
 
         {/* Profile Routes */}
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/profile/:id" element={<UserProfile />} />
         <Route path="/store-profile" element={<StoreProfile />} />
 
         {/* Store Routes */}
